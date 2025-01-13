@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToastHandler } from "@/hooks/use-toast-handler";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function SignUpForm({
   className,
@@ -56,7 +57,11 @@ export function SignUpForm({
 
       const result = await signUp(formData);
 
-      handleToast({ result, form: form, successMessage: "Account created successfully" });
+      handleToast({
+        result,
+        form: form,
+        successMessage: "Account created successfully",
+      });
       if (result.success) {
         router.push("/login");
       }
@@ -143,11 +148,7 @@ export function SignUpForm({
                       <FormItem>
                         <FormLabel>Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="********"
-                            {...field}
-                          />
+                          <PasswordInput field={field} placeholder="********" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -160,11 +161,7 @@ export function SignUpForm({
                       <FormItem>
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
-                          <Input
-                            type="password"
-                            placeholder="********"
-                            {...field}
-                          />
+                          <PasswordInput field={field} placeholder="********" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

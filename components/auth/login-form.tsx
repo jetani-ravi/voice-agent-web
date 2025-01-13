@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToastHandler } from "@/hooks/use-toast-handler";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function LoginForm({
   className,
@@ -146,7 +147,7 @@ export function LoginForm({
                         </Link>
                       </div>
                       <FormControl>
-                        <Input type="password" {...field} />
+                        <PasswordInput field={field} placeholder="********" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
