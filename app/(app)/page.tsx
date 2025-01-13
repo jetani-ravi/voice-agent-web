@@ -1,17 +1,15 @@
 import { Header } from "@/components/header/header";
+import { redirect } from "next/navigation";
 
 const breadcrumbs = [
   {
-    label: "Home",
-    href: "/",
-  },
-  {
     label: "Dashboard",
-    href: "/dashboard",
+    href: "/",
   },
 ];
 
 export default function Page() {
+  redirect("/agents");
   return (
     <>
       <Header breadcrumbs={breadcrumbs} />

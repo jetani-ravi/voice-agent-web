@@ -1,0 +1,1 @@
+export const FAST_API_ROUTE = "/api/python"
