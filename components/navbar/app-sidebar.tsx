@@ -9,9 +9,9 @@ import {
   Frame,
   GalleryVerticalEnd,
   Map,
+  Phone,
   PieChart,
   Settings2,
-  SquareTerminal,
 } from "lucide-react";
 
 import { NavMain } from "@/components/navbar/nav-main";
@@ -53,18 +53,18 @@ const data = {
   navMain: [
     {
       title: "Agents",
-      url: "#",
+      url: "/agents",
       icon: Bot,
     },
     {
       title: "Knowledge Base",
-      url: "#",
+      url: "/knowledge-base",
       icon: BookOpen,
     },
     {
-      title: "Playground",
-      url: "#",
-      icon: SquareTerminal,
+      title: "Phone",
+      url: "/phone",
+      icon: Phone,
       isActive: true,
     },
     {
