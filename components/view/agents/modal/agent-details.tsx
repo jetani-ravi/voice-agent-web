@@ -11,13 +11,17 @@ import {
 import { ArrowLeft } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { Agent } from "@/app/modules/agents/interface";
+import PromptsSection from "./components/prompts";
+import ConfigurationSection from "./components/configuration";
+import TestLLMSection from "./components/test-llm";
 
 interface AgentDetailDrawerProps {
-  agentId: string;
+  agent: Agent;
 }
 
 export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
-  agentId,
+  agent,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
@@ -30,23 +34,37 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
   return (
     <Drawer open={isOpen} onOpenChange={handleClose}>
       <DrawerContent>
-        <div className="h-screen w-full sm:w-[90vw] sm:max-w-lg">
-          <DrawerHeader className="flex items-center gap-2">
-            <Button variant="outline" size="icon" onClick={handleClose}>
+        <div className="h-screen w-full flex flex-col bg-sidebar-accent">
+          <DrawerHeader className="flex items-center gap-4">
+            <Button
+              variant="outline"
+              color="secondary"
+              size="icon"
+              onClick={handleClose}
+            >
               <ArrowLeft className="h-4 w-4 cursor-pointer" />
             </Button>
             <div className="flex-1">
               <DrawerTitle className="text-md font-semibold">
-                Agent Details
+                {agent.agent_config.agent_name}
               </DrawerTitle>
               <DrawerDescription className="text-sm text-muted-foreground">
-                Agent ID: {agentId}
+                {agent.agent_id}
               </DrawerDescription>
             </div>
           </DrawerHeader>
-          <div className="flex-1 overflow-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">Agent ID: {agentId}</h2>
-            {/* Add more agent details here */}
+
+          <div className="flex-1 overflow-hidden">
+            <div className="flex h-full py-2 px-4 gap-2">
+              {/* Prompts Section */}
+              <PromptsSection agent={agent} />
+
+              {/* Configuration Section */}
+              <ConfigurationSection agent={agent} />
+
+              {/* Test Section */}
+              <TestLLMSection agent={agent} />
+            </div>
           </div>
         </div>
       </DrawerContent>

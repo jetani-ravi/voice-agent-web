@@ -34,7 +34,7 @@ export function Header({ breadcrumbs }: HeaderProps) {
 
                   if (isLast) {
                     return (
-                      <BreadcrumbItem key={crumb.label}>
+                      <BreadcrumbItem key={crumb.label + index}>
                         <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
                       </BreadcrumbItem>
                     );
@@ -43,14 +43,14 @@ export function Header({ breadcrumbs }: HeaderProps) {
                   return (
                     <>
                       <BreadcrumbItem
-                        key={crumb.label}
+                        key={crumb.label + index}
                         className="hidden md:flex"
                       >
                         <BreadcrumbLink href={crumb.href}>
                           {crumb.label}
                         </BreadcrumbLink>
                       </BreadcrumbItem>
-                      <BreadcrumbSeparator key={`${crumb.label}-separator`} />
+                      <BreadcrumbSeparator key={`${crumb.label}-separator-${index}`} />
                     </>
                   );
                 })}

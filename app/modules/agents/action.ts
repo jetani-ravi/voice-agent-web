@@ -2,7 +2,7 @@
 
 import { api } from "@/lib/fetchAPI";
 import { createParams, SearchParams } from "@/lib/searchParams";
-import { ListAgentsResponse } from "./interface";
+import { Agent, ListAgentsResponse } from "./interface";
 
 export type GetAgentsParams = SearchParams;
 
@@ -14,5 +14,13 @@ export const getAgents = async (params: GetAgentsParams = {}) => {
     bearer: true,
   });
 
+  return response;
+};
+
+export const getAgent = async (agent_id: string) => {
+  const url = `/agent/${agent_id}`;
+  const response = await api.get<Agent>(url, {
+    bearer: true,
+  });
   return response;
 };
