@@ -18,6 +18,12 @@ export interface ApiResponse<T> {
   error?: string | ZodError | ApiError;
 }
 
+export interface Pagination {
+  count: number;
+  page: number;
+  limit: number;
+}
+
 // Simple type guard for API errors
 export function isApiError(error: unknown): error is ApiError {
   return (

@@ -1,5 +1,3 @@
-import { ApiResponse } from "@/types/api";
-
 export interface User {
   _id: string;
   email: string;
@@ -14,4 +12,4 @@ export interface User {
   deleted_at: string | null;
 }
 
-export type AuthResponse = ApiResponse<User>
+export type AuthResponse = User

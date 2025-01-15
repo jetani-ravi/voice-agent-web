@@ -17,10 +17,7 @@ export async function handleApiResponse<T>(
     };
   }
 
-  return {
-    success: true,
-    data: data.data
-  };
+  return data;
 }
 
 function getErrorType(status: number): ApiErrorType {
