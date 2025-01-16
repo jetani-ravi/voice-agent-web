@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import React from "react";
 
 export interface BreadcrumbItem {
   href?: string;
@@ -41,17 +42,14 @@ export function Header({ breadcrumbs }: HeaderProps) {
                   }
 
                   return (
-                    <>
-                      <BreadcrumbItem
-                        key={crumb.label + index}
-                        className="hidden md:flex"
-                      >
+                    <React.Fragment key={crumb.label + index}>
+                      <BreadcrumbItem className="hidden md:flex">
                         <BreadcrumbLink href={crumb.href}>
                           {crumb.label}
                         </BreadcrumbLink>
                       </BreadcrumbItem>
-                      <BreadcrumbSeparator key={`${crumb.label}-separator-${index}`} />
-                    </>
+                      <BreadcrumbSeparator />
+                    </React.Fragment>
                   );
                 })}
               </BreadcrumbList>

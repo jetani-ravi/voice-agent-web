@@ -14,12 +14,18 @@ import {
   Phone,
 } from "lucide-react";
 import React from "react";
+import LLMSection from "./sections/llm";
+import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
+import TranscriberSection from "./sections/transcriber";
+import VoiceSection from "./sections/voice";
+import CallSection from "./sections/call";
 
 interface Props {
   agent: Agent;
+  knowledgeBases: KnowledgeBase[];
 }
 
-const ConfigurationSection = ({}: Props) => {
+const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
   return (
     <div className="flex-1 px-6 py-4 bg-card overflow-y-auto rounded-lg">
       <Accordion type="single" collapsible className="w-full">
@@ -30,7 +36,9 @@ const ConfigurationSection = ({}: Props) => {
               <span>LLM</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{/* LLM content */}</AccordionContent>
+          <AccordionContent>
+            <LLMSection agent={agent} knowledgeBases={knowledgeBases} />
+          </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="knowledge-base">
@@ -40,7 +48,9 @@ const ConfigurationSection = ({}: Props) => {
               <span>Transcriber</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{/* Transcriber content */}</AccordionContent>
+          <AccordionContent>
+            <TranscriberSection agent={agent} />
+          </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="speech">
@@ -50,7 +60,9 @@ const ConfigurationSection = ({}: Props) => {
               <span>Voice</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{/* Voice content */}</AccordionContent>
+          <AccordionContent>
+            <VoiceSection agent={agent} />
+          </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="call">
@@ -60,7 +72,9 @@ const ConfigurationSection = ({}: Props) => {
               <span>Call</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{/* Call content */}</AccordionContent>
+          <AccordionContent>
+            <CallSection agent={agent} />
+          </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="functions">

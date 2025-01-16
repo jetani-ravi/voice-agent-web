@@ -3,6 +3,7 @@ import React from "react";
 import { Header } from "@/components/header/header";
 import { AgentDetailDrawer } from "@/components/view/agents/modal/agent-details";
 import { getAgent } from "@/app/modules/agents/action";
+import { getKnowledgeBases } from "@/app/modules/knowledgebase/action";
 
 const breadcrumbs = [
   {
@@ -22,13 +23,15 @@ const AgentDetail = async ({
 }) => {
   const agent_id = (await params).agent_id;
   const response = await getAgent(agent_id);
+  const knowledgeBase = await getKnowledgeBases({});
   const agent = response.data!;
+  const { knowledge_bases } = knowledgeBase.data!;
 
   return (
     <ScreenContainer>
       <Header breadcrumbs={breadcrumbs} />
       <ScreenContent>
-        <AgentDetailDrawer agent={agent} />
+        <AgentDetailDrawer agent={agent} knowledgeBases={knowledge_bases} />
       </ScreenContent>
     </ScreenContainer>
   );

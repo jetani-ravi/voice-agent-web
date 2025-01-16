@@ -1,38 +1,116 @@
+"use client";
+
+import React from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import React from "react";
-import { Agent } from "@/app/modules/agents/interface";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Agent, CreateAgentPayload } from "@/app/modules/agents/interface";
+import { promptsSchema, PromptsValues } from "@/app/modules/agents/validation";
+import { updateAgent } from "@/app/modules/agents/action";
+import { useToastHandler } from "@/hooks/use-toast-handler";
 
 interface Props {
   agent: Agent;
 }
 
 const PromptsSection = ({ agent }: Props) => {
+  const { handleToast } = useToastHandler();
+  const form = useForm<PromptsValues>({
+    resolver: zodResolver(promptsSchema),
+    defaultValues: {
+      systemPrompt: agent.agent_prompts?.task_1?.system_prompt || "",
+      agentWelcomeMessage: agent.agent_config.agent_welcome_message || "",
+    },
+  });
+
+  const onSubmit = async (values: PromptsValues) => {
+    try {
+      const updatedPayload: CreateAgentPayload = {
+        agent_config: {
+          ...agent.agent_config,
+          agent_welcome_message: values.agentWelcomeMessage,
+        },
+        agent_prompts: {
+          ...agent.agent_prompts,
+          task_1: {
+            ...agent.agent_prompts?.task_1,
+            system_prompt: values.systemPrompt,
+          },
+        },
+      };
+
+      // Make the update API call
+      const result = await updateAgent(agent.agent_id, updatedPayload);
+      handleToast({ result, form });
+    } catch (error) {
+      console.error("Something went wrong. Please try again.", error);
+    }
+  };
+
   return (
-    <div className="w-1/2 p-6 bg-card rounded-lg">
-      <div className="space-y-4">
-        <div>
-          <p className="text-sm text-muted-foreground mb-2">
-            Type in a universal prompt for your agent, such as its role,
-            conversational style, objective, etc.
-          </p>
-          <Textarea
-            placeholder="Enter universal prompt..."
-            className="min-h-[100px]"
-            value={agent.agent_prompts?.task_1?.system_prompt || ""}
-          />
-        </div>
+    <div className="w-2/5 p-6 bg-card rounded-lg">
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <p className="text-sm text-muted-foreground mb-2">
+              Type in a universal prompt for your agent, such as its role,
+              conversational style, objective, etc.
+            </p>
+            <FormField
+              control={form.control}
+              name="systemPrompt"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Enter universal prompt..."
+                      className="min-h-[100px]"
+                      rows={20}
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                  <FormDescription>
+                    {`Use {{...}} to add variables.`}
+                  </FormDescription>
+                </FormItem>
+              )}
+            />
+          </div>
 
-        <div>
-          <h3 className="text-sm font-medium mb-2">Welcome Message</h3>
-          <Input placeholder="Enter welcome message..." />
-        </div>
+          <div>
+            <FormField
+              control={form.control}
+              name="agentWelcomeMessage"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Welcome Message</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter welcome message..." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
-        <Button variant="outline" className="w-full">
-          Edit prompt tree
-        </Button>
-      </div>
+          <div className="flex justify-end">
+            <Button type="submit">Save Changes</Button>
+          </div>
+        </form>
+      </Form>
     </div>
   );
 };

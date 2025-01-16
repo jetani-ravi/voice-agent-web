@@ -15,13 +15,16 @@ import { Agent } from "@/app/modules/agents/interface";
 import PromptsSection from "./components/prompts";
 import ConfigurationSection from "./components/configuration";
 import TestLLMSection from "./components/test-llm";
+import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 
 interface AgentDetailDrawerProps {
   agent: Agent;
+  knowledgeBases: KnowledgeBase[];
 }
 
 export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
   agent,
+  knowledgeBases,
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const router = useRouter();
@@ -60,7 +63,7 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
               <PromptsSection agent={agent} />
 
               {/* Configuration Section */}
-              <ConfigurationSection agent={agent} />
+              <ConfigurationSection agent={agent} knowledgeBases={knowledgeBases} />
 
               {/* Test Section */}
               <TestLLMSection agent={agent} />

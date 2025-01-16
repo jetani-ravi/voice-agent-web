@@ -4,7 +4,7 @@ import { ZodError } from "zod";
 import { isApiError } from "@/types/api";
 
 type ToastHandlerOptions<T> = {
-  result: { success: boolean; error?: any; data?: T };
+  result: { success: boolean; error?: any; data?: T; message?: string };
   form?: any;
   successMessage?: string;
 };
@@ -33,7 +33,7 @@ export function useToastHandler() {
       if (isApiError(result.error)) {
         toast({
           title: result.error.type,
-          description: result.error.message,
+          description: result.message || result.error.message,
           variant: "destructive",
         });
         return;
@@ -42,7 +42,7 @@ export function useToastHandler() {
       // Handle generic errors
       toast({
         title: "Error",
-        description: (result.error as string) || "An error occurred",
+        description: result.message || result.error || "An error occurred",
         variant: "destructive",
       });
       return;
@@ -51,7 +51,7 @@ export function useToastHandler() {
     // Handle success
     toast({
       title: "Success",
-      description: successMessage || "Operation completed successfully",
+      description: result.message || successMessage || "Operation completed successfully",
     });
   };
 

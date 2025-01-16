@@ -2,7 +2,8 @@
 
 import { api } from "@/lib/fetchAPI";
 import { createParams, SearchParams } from "@/lib/searchParams";
-import { Agent, ListAgentsResponse } from "./interface";
+import { Agent, CreateAgentPayload, ListAgentsResponse } from "./interface";
+import { revalidatePath } from "next/cache";
 
 export type GetAgentsParams = SearchParams;
 
@@ -22,5 +23,22 @@ export const getAgent = async (agent_id: string) => {
   const response = await api.get<Agent>(url, {
     bearer: true,
   });
+  return response;
+};
+
+export const updateAgent = async (
+  agent_id: string,
+  payload: CreateAgentPayload
+) => {
+  const url = `/agent/${agent_id}`;
+  const response = await api.put<Agent>(url, payload, { bearer: true });
+  revalidatePath("/agents", "layout");
+  return response;
+};
+
+export const createAgent = async (payload: CreateAgentPayload) => {
+  const url = `/agent`;
+  const response = await api.post<Agent>(url, payload, { bearer: true });
+  revalidatePath("/agents", "layout");
   return response;
 };

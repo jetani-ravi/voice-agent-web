@@ -43,18 +43,24 @@ export interface ToolsConfig {
   api_tools?: ToolModel;
 }
 
-export interface LlmAgent {
+type AgentTypeToConfig = {
+  openai_assistant: OpenaiAssistant;
+  knowledgebase_agent: KnowledgebaseAgent;
+  graph_agent: GraphAgentConfig;
+  llm_agent_graph: LlmAgentGraph;
+  multiagent: MultiAgent;
+  simple_llm_agent: SimpleLlmAgent;
+};
+
+type ValidAgentType = keyof AgentTypeToConfig;
+
+export interface LlmAgent<T extends ValidAgentType = ValidAgentType> {
   agent_flow_type: string;
-  agent_type: string;
+  agent_type: T;
   routes?: Routes;
-  llm_config:
-    | OpenaiAssistant
-    | KnowledgebaseAgent
-    | LlmAgentGraph
-    | MultiAgent
-    | SimpleLlmAgent
-    | GraphAgentConfig;
+  llm_config: AgentTypeToConfig[T];
 }
+
 
 export interface SimpleLlmAgent extends Llm {
   agent_flow_type?: string;
@@ -164,6 +170,7 @@ export interface ToolsChainModel {
 }
 
 export interface ConversationConfig {
+  voicemail?: boolean;
   optimize_latency?: boolean;
   hangup_after_silence?: number;
   incremental_delay?: number;
@@ -181,6 +188,7 @@ export interface ConversationConfig {
   trigger_user_online_message_after?: number;
   check_user_online_message?: string;
   check_if_user_online?: boolean;
+  call_hangup_message?: string;
 }
 
 export interface Routes {
