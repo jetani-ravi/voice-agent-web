@@ -58,10 +58,7 @@ const CustomFunctionDialog = ({
           key: existingTool.key,
           value: {
             method: existingParams.method as string,
-            param:
-              typeof existingParams.param === "string"
-                ? JSON.parse(existingParams.param)
-                : existingParams.param,
+            param: existingParams.param as string,
             url: existingParams.url as string,
             api_token: existingParams.api_token as string,
           },
@@ -71,10 +68,6 @@ const CustomFunctionDialog = ({
       setJsonData(API_TOOLS.CUSTOM_FUNCTION);
     }
   }, [isOpen, editState, apiToolsConfig]);
-
-  const handleJsonChange = (newData: any) => {
-    setJsonData(newData as any);
-  };
 
   const handleSave = () => {
     try {
@@ -138,7 +131,7 @@ const CustomFunctionDialog = ({
           <JsonEditor
             data={jsonData}
             minWidth="100%"
-            onChange={handleJsonChange as any}
+            setData={setJsonData as any}
           />
         </div>
         <DialogFooter>
