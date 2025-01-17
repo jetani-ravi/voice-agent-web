@@ -66,14 +66,14 @@ const CallSection = ({ agent }: Props) => {
                     ...task.tools_config.output,
                     provider: data.provider,
                   },
-                  task_config: {
-                    ...task.task_config,
-                    voicemail: data.detectVoicemail,
-                    hangup_after_silence: data.hangupAfterSilence,
-                    call_cancellation_prompt: data.callCancellationPrompt,
-                    call_hangup_message: data.callHangupMessage,
-                    call_terminate: data.callTerminate,
-                  },
+                },
+                task_config: {
+                  ...task.task_config,
+                  voicemail: data.detectVoicemail,
+                  hangup_after_silence: data.hangupAfterSilence,
+                  call_cancellation_prompt: data.callCancellationPrompt,
+                  call_hangup_message: data.callHangupMessage,
+                  call_terminate: data.callTerminate,
                 },
               };
             }

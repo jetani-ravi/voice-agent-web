@@ -59,8 +59,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
 
   const selectedProvider = PROVIDERS.find(
     (provider) =>
-      provider.key === form.watch("provider") &&
-      provider.category === "llm"
+      provider.key === form.watch("provider") && provider.category === "llm"
   );
 
   const onSubmit = async (data: LLMValues) => {
@@ -248,13 +247,13 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                         {knowledgeBase.fileName}
                       </SelectItem>
                     ))}
-                    <SelectItem
-                      value="add-new"
-                      onClick={() => {
-                        router.push(`/knowledge-base`);
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
+                    <SelectItem value="add-new">
+                      <div
+                        className="flex items-center gap-2"
+                        onClick={() => {
+                          router.push(`/knowledge-base`);
+                        }}
+                      >
                         Add new Knowledge Base
                         <SquareArrowOutUpRight className="h-3 w-3" />
                       </div>

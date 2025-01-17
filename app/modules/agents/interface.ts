@@ -146,7 +146,7 @@ export interface IOModel {
 }
 
 export interface ToolModel {
-  tools?: string | ToolDescription[];
+  tools?: ToolDescription[];
   tools_params: Record<string, APIParams>;
 }
 
@@ -154,6 +154,7 @@ export interface ToolDescription {
   name: string;
   description: string;
   parameters: Record<string, unknown>;
+  key: string;
 }
 
 export interface APIParams {

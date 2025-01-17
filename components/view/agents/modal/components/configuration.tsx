@@ -19,6 +19,7 @@ import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import TranscriberSection from "./sections/transcriber";
 import VoiceSection from "./sections/voice";
 import CallSection from "./sections/call";
+import FunctionsSection from "./sections/functions";
 
 interface Props {
   agent: Agent;
@@ -29,7 +30,7 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
   return (
     <div className="flex-1 px-6 py-4 bg-card overflow-y-auto rounded-lg">
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="functions">
+        <AccordionItem value="llm">
           <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
               <Brain className="h-4 w-4" />
@@ -41,7 +42,7 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="knowledge-base">
+        <AccordionItem value="transcriber">
           <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
               <Mic className="h-4 w-4" />
@@ -53,7 +54,7 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="speech">
+        <AccordionItem value="voice">
           <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
               <AudioLines className="h-4 w-4" />
@@ -84,7 +85,9 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
               <span>Functions</span>
             </div>
           </AccordionTrigger>
-          <AccordionContent>{/* Functions content */}</AccordionContent>
+          <AccordionContent>
+            <FunctionsSection agent={agent} />
+          </AccordionContent>
         </AccordionItem>
 
         <AccordionItem value="post-call">
