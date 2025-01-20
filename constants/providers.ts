@@ -59,7 +59,9 @@ export const PROVIDERS = [
     category: "synthesizer",
     key: "deepgram",
     label: "Deepgram",
-    models: [{ key: "aura-asteria-en", label: "Asteria" }],
+    models: [
+      { key: "aura-asteria-en", label: "Asteria", family: "deepgram" },
+    ],
   },
   {
     category: "telephony",

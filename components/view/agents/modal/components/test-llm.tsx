@@ -2,14 +2,20 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import React from "react";
 import { Agent } from "@/app/modules/agents/interface";
+import { initiateCall } from "@/app/modules/phone-numbers/action";
 
 interface Props {
   agent: Agent;
 }
 
-const TestLLMSection = ({}: Props) => {
-  const onTestAudio = () => {
+const TestLLMSection = ({ agent }: Props) => {
+  const onTestAudio = async () => {
     console.log("test audio");
+    const response = await initiateCall({
+      recipient_phone_number: "+916356827895",
+      agent_id: agent.agent_id!,
+    });
+    console.log(response);
   };
 
   const onTestLLM = () => {

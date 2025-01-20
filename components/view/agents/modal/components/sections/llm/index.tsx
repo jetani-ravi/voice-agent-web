@@ -72,7 +72,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
       model: llmConfig?.model || "",
       tokens: llmConfig?.max_tokens || 150,
       temperature: llmConfig?.temperature || 0.2,
-      knowledgeBase: providerConfig?.vector_id || "",
+      knowledgeBase: providerConfig?.vector_id || "none",
     },
   });
 
@@ -128,6 +128,9 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
 
   const onSubmit = async (data: LLMValues) => {
     try {
+      const selectedModel = selectedProvider?.models?.find(
+        (model) => model.key === data.model
+      );
       const updatedAgent: CreateAgentPayload = {
         agent_prompts: {
           ...agent.agent_prompts,
@@ -152,6 +155,10 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                   ...task.tools_config,
                   llm_agent: {
                     ...task.tools_config.llm_agent,
+                    agent_type:
+                      data?.knowledgeBase === "none"
+                        ? "simple_llm_agent"
+                        : "graph_agent",
                     routes:
                       faqs.length > 0
                         ? {
@@ -170,20 +177,30 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                       ...llmConfig,
                       provider: data.provider,
                       model: data.model,
+                      family: selectedModel?.family || "",
                       max_tokens: data.tokens,
                       temperature: data.temperature,
-                      nodes: [
-                        {
-                          ...llmConfig.nodes?.[0],
-                          rag_config: {
-                            ...llmConfig.nodes?.[0]?.rag_config,
-                            provider_config: {
-                              ...providerConfig,
-                              vector_id: data.knowledgeBase,
-                            },
-                          },
-                        },
-                      ],
+                      nodes:
+                        data?.knowledgeBase === "none"
+                          ? undefined
+                          : [
+                              {
+                                ...llmConfig.nodes?.[0],
+                                rag_config: {
+                                  ...llmConfig.nodes?.[0]?.rag_config,
+                                  provider_config: {
+                                    ...providerConfig,
+                                    vector_id: data.knowledgeBase,
+                                  },
+                                },
+                              },
+                            ],
+                      agent_information:
+                        data?.knowledgeBase === "none"
+                          ? "simple_llm_agent"
+                          : "graph_agent",
+                      current_node_id:
+                        data?.knowledgeBase === "none" ? "" : "root",
                     },
                   },
                 },
@@ -342,6 +359,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                     <SelectValue placeholder="Select Knowledge Base" />
                   </SelectTrigger>
                   <SelectContent>
+                    <SelectItem value="none">No Knowledge Base</SelectItem>
                     {knowledgeBases?.map((knowledgeBase) => (
                       <SelectItem
                         key={knowledgeBase.vector_id}

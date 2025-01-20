@@ -1,8 +1,6 @@
 import { api } from "@/lib/fetchAPI";
 
-import { createParams } from "@/lib/searchParams";
-
-import { SearchParams } from "@/lib/searchParams";
+import { createParams, SearchParams } from "@/lib/searchParams";
 import { KnowledgeBase, ListKnowledgeBasesResponse } from "./interface";
 
 export const getKnowledgeBases = async (params: SearchParams = {}) => {
