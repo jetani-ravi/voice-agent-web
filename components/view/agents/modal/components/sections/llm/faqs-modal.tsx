@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -7,14 +5,12 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { PlusCircle, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FaqsValues, faqsSchema } from "@/app/modules/agents/validation";
 import {
   Form,
   FormControl,
@@ -24,17 +20,37 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { faqsSchema, FaqsValues } from "@/app/modules/agents/validation";
+import { useEffect } from "react";
 
-export default function FaqsModal() {
+interface FaqsModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSaveFaq: (faq: FaqsValues) => void;
+  initialData?: FaqsValues;
+}
+
+export default function FaqsModal({
+  isOpen,
+  onClose,
+  onSaveFaq,
+  initialData,
+}: FaqsModalProps) {
   const form = useForm<FaqsValues>({
     resolver: zodResolver(faqsSchema),
-    defaultValues: {
-      name: "",
+    defaultValues: initialData || {
+      route_name: "",
       response: "",
-      threshold: 0.9,
-      utterances: [""],
+      score_threshold: 0.9,
+      utterances: [{ utterance: "" }],
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+    }
+  }, [initialData, form]);
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
@@ -42,30 +58,27 @@ export default function FaqsModal() {
   });
 
   const onSubmit = (data: FaqsValues) => {
-    console.log(data);
-    // Handle form submission
+    onSaveFaq(data);
+    form.reset();
   };
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="outline" type="button">
-          <PlusCircle className="h-4 w-4 mr-2" /> Add a new block for FAQs and
-          Guardrails
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
-          <DialogTitle>Add new block</DialogTitle>
+          <DialogTitle>{initialData ? "Edit FAQ" : "Add new FAQ"}</DialogTitle>
           <DialogDescription>
-            This will add a new blocks for FAQs & Guardrails
+            {initialData
+              ? "Modify your FAQ block and automated response"
+              : "Create a new block for FAQs & Guardrails"}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            {/* Form fields remain the same */}
             <FormField
               control={form.control}
-              name="name"
+              name="route_name"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Name</FormLabel>
@@ -103,7 +116,7 @@ export default function FaqsModal() {
 
             <FormField
               control={form.control}
-              name="threshold"
+              name="score_threshold"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Threshold for this rule</FormLabel>
@@ -119,9 +132,7 @@ export default function FaqsModal() {
                   </FormControl>
                   <FormDescription>
                     A lower threshold increases the likelihood that sentences
-                    similar to the utterances will trigger this response, but it
-                    also raises the risk of unintended sentences matching this
-                    response
+                    similar to the utterances will trigger this response
                   </FormDescription>
                   <FormMessage />
                 </FormItem>
@@ -134,7 +145,7 @@ export default function FaqsModal() {
                 <div key={field.id} className="flex gap-2">
                   <FormField
                     control={form.control}
-                    name={`utterances.${index}`}
+                    name={`utterances.${index}.utterance`}
                     render={({ field }) => (
                       <FormItem className="flex-1">
                         <FormControl>
@@ -144,7 +155,7 @@ export default function FaqsModal() {
                       </FormItem>
                     )}
                   />
-                  {fields.length > 1 && ( // Only show delete button if more than one utterance
+                  {index > 0 && (
                     <Button
                       type="button"
                       variant="ghost"
@@ -161,7 +172,7 @@ export default function FaqsModal() {
                   type="button"
                   variant="secondary"
                   size="sm"
-                  onClick={() => append("")}
+                  onClick={() => append({ utterance: "" })}
                   className="mt-2"
                 >
                   Add more (up to 20)
@@ -169,8 +180,13 @@ export default function FaqsModal() {
               )}
             </div>
 
-            <div className="flex justify-end">
-              <Button type="submit">Save</Button>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" type="button" onClick={onClose}>
+                Cancel
+              </Button>
+              <Button type="submit" onClick={form.handleSubmit(onSubmit)}>
+                {initialData ? "Update" : "Save"}
+              </Button>
             </div>
           </form>
         </Form>

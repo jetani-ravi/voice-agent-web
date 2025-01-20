@@ -1,9 +1,9 @@
 import { getAgents, GetAgentsParams } from "@/app/modules/agents/action";
 import { Header } from "@/components/header/header";
 import { ScreenContainer, ScreenContent } from "@/components/screen-container";
-import { Button } from "@/components/ui/button";
 import DataTable from "@/components/view/agents/data-table";
 import { createSearchParams, SearchParams } from "@/lib/searchParams";
+import { CreateAgentButton } from "./create-button";
 
 const breadcrumbs = [
   {
@@ -21,7 +21,7 @@ const AgentsPage = async (props: { searchParams: SearchParams }) => {
 
   return (
     <ScreenContainer>
-      <Header breadcrumbs={breadcrumbs} rightContent={<Button> Agent</Button>} />
+      <Header breadcrumbs={breadcrumbs} rightContent={<CreateAgentButton />} />
       <ScreenContent>
         <DataTable agents={agents} pagination={pagination} />
       </ScreenContent>

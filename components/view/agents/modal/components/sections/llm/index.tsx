@@ -1,4 +1,10 @@
-import { Save, SquareArrowOutUpRight } from "lucide-react";
+import {
+  Pencil,
+  PlusCircle,
+  Save,
+  SquareArrowOutUpRight,
+  Trash,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Select,
@@ -16,20 +22,25 @@ import {
   FormControl,
   FormMessage,
 } from "@/components/ui/form";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
-import { llmSchema, LLMValues } from "@/app/modules/agents/validation";
+import {
+  FaqsValues,
+  llmSchema,
+  LLMValues,
+} from "@/app/modules/agents/validation";
 import {
   Agent,
+  AssistantStatus,
   CreateAgentPayload,
   GraphAgentConfig,
   LlmAgent,
 } from "@/app/modules/agents/interface";
 import { PROVIDERS } from "@/constants/providers";
 import { useRouter } from "next/navigation";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import FaqsModal from "./faqs-modal";
 
@@ -41,11 +52,19 @@ interface Props {
 const LLMSection = ({ agent, knowledgeBases }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
-  const llmAgent = agent.agent_config.tasks[0].tools_config
-    .llm_agent as LlmAgent<"graph_agent">;
+  const [faqs, setFaqs] = useState<FaqsValues[]>([]);
+  const [isOpen, setIsOpen] = useState(false);
+  const [selectedFaq, setSelectedFaq] = useState<{
+    data: FaqsValues;
+    index: number;
+  } | null>(null);
+  const task = agent.agent_config.tasks.find(
+    (task) => task.task_type === "conversation"
+  );
+  const llmAgent = task?.tools_config.llm_agent as LlmAgent<"graph_agent">;
   const llmConfig: GraphAgentConfig = llmAgent?.llm_config;
   const providerConfig =
-    llmConfig?.nodes[0].rag_config?.provider_config || ({} as any);
+    llmConfig?.nodes?.[0]?.rag_config?.provider_config || ({} as any);
   const form = useForm<LLMValues>({
     resolver: zodResolver(llmSchema),
     defaultValues: {
@@ -57,6 +76,51 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
     },
   });
 
+  useEffect(() => {
+    if (agent) {
+      const task = agent.agent_config.tasks.find(
+        (task) => task.task_type === "conversation"
+      );
+      setFaqs(
+        task?.tools_config.llm_agent?.routes?.routes?.map((route) => ({
+          ...route,
+          score_threshold: route.score_threshold || 0.9,
+          utterances: route.utterances.map((utterance) => ({
+            utterance: utterance,
+          })),
+        })) || []
+      );
+    }
+  }, [agent]);
+
+  const handleEditFaq = (index: number) => {
+    setSelectedFaq({ data: faqs[index], index });
+    setIsOpen(true);
+  };
+
+  const handleDeleteFaq = (index: number) => {
+    setFaqs((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleSaveFaq = (data: FaqsValues) => {
+    if (selectedFaq !== null) {
+      // Update existing FAQ
+      setFaqs((prev) =>
+        prev.map((faq, index) => (index === selectedFaq.index ? data : faq))
+      );
+      setSelectedFaq(null);
+    } else {
+      // Add new FAQ
+      setFaqs((prev) => [...prev, data]);
+    }
+    setIsOpen(false);
+  };
+
+  const handleCloseModal = () => {
+    setIsOpen(false);
+    setSelectedFaq(null);
+  };
+
   const selectedProvider = PROVIDERS.find(
     (provider) =>
       provider.key === form.watch("provider") && provider.category === "llm"
@@ -65,15 +129,22 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
   const onSubmit = async (data: LLMValues) => {
     try {
       const updatedAgent: CreateAgentPayload = {
+        agent_prompts: {
+          ...agent.agent_prompts,
+        },
         agent_config: {
           ...agent.agent_config,
-          tasks: agent.agent_config.tasks.map((task, index) => {
-            if (index === 0 && task.tools_config.llm_agent) {
+          tasks: agent.agent_config.tasks.map((task) => {
+            if (
+              task.task_type === "conversation" &&
+              task.tools_config.llm_agent
+            ) {
               const llmAgent = task.tools_config
                 .llm_agent as LlmAgent<"graph_agent">;
               const llmConfig: GraphAgentConfig = llmAgent?.llm_config;
               const providerConfig =
-                llmConfig?.nodes[0].rag_config?.provider_config || ({} as any);
+                llmConfig?.nodes?.[0]?.rag_config?.provider_config ||
+                ({} as any);
 
               return {
                 ...task,
@@ -81,6 +152,20 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                   ...task.tools_config,
                   llm_agent: {
                     ...task.tools_config.llm_agent,
+                    routes:
+                      faqs.length > 0
+                        ? {
+                            ...llmConfig.routes,
+                            embedding_model:
+                              "snowflake/snowflake-arctic-embed-m",
+                            routes: faqs.map((faq) => ({
+                              ...faq,
+                              utterances: faq.utterances.map(
+                                (utterance) => utterance.utterance
+                              ),
+                            })),
+                          }
+                        : undefined,
                     llm_config: {
                       ...llmConfig,
                       provider: data.provider,
@@ -89,9 +174,9 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                       temperature: data.temperature,
                       nodes: [
                         {
-                          ...llmConfig.nodes[0],
+                          ...llmConfig.nodes?.[0],
                           rag_config: {
-                            ...llmConfig.nodes[0].rag_config,
+                            ...llmConfig.nodes?.[0]?.rag_config,
                             provider_config: {
                               ...providerConfig,
                               vector_id: data.knowledgeBase,
@@ -108,8 +193,17 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
           }),
         },
       };
-      const result = await updateAgent(agent.agent_id, updatedAgent);
+
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatedAgent)
+        : createAgent(updatedAgent));
       handleToast({ result, form });
+      if (
+        result.success &&
+        result.data?.assistant_status === AssistantStatus.SEEDING
+      ) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error);
     }
@@ -234,7 +328,16 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
             <FormItem>
               <FormLabel>Knowledge Base</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    if (value === "add-new") {
+                      router.push(`/knowledge-base`);
+                    } else {
+                      field.onChange(value);
+                    }
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Knowledge Base" />
                   </SelectTrigger>
@@ -248,12 +351,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                       </SelectItem>
                     ))}
                     <SelectItem value="add-new">
-                      <div
-                        className="flex items-center gap-2"
-                        onClick={() => {
-                          router.push(`/knowledge-base`);
-                        }}
-                      >
+                      <div className="flex items-center gap-2">
                         Add new Knowledge Base
                         <SquareArrowOutUpRight className="h-3 w-3" />
                       </div>
@@ -268,8 +366,62 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
 
         {/* FAQs and Guardrails */}
         <div className="flex flex-col gap-3">
-          <h3 className="text-sm font-medium">Add FAQs and Guardrails</h3>
-          <FaqsModal />
+          <div className="flex justify-between items-center">
+            <h3 className="text-sm font-medium">FAQs and Guardrails</h3>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => setIsOpen(true)}
+              className="h-8"
+            >
+              <PlusCircle className="h-4 w-4 mr-2" /> Add New
+            </Button>
+          </div>
+
+          <div className="space-y-2">
+            {faqs.map((faq, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center bg-muted p-3 rounded-md hover:bg-muted/80 transition-colors"
+              >
+                <div className="flex flex-col gap-1">
+                  <h5 className="font-medium">{faq.route_name}</h5>
+                  <p className="text-sm text-muted-foreground">
+                    {faq.utterances.length} utterance
+                    {faq.utterances.length !== 1 ? "s" : ""} • Threshold:{" "}
+                    {faq.score_threshold}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    size="icon"
+                    onClick={() => handleEditFaq(index)}
+                    className="h-8 w-8"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    type="button"
+                    size="icon"
+                    onClick={() => handleDeleteFaq(index)}
+                    className="h-8 w-8 text-destructive hover:text-destructive"
+                  >
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <FaqsModal
+            isOpen={isOpen}
+            onClose={handleCloseModal}
+            onSaveFaq={handleSaveFaq}
+            initialData={selectedFaq?.data}
+          />
         </div>
 
         {/* Save Button */}

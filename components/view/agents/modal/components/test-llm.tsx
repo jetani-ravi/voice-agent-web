@@ -8,6 +8,14 @@ interface Props {
 }
 
 const TestLLMSection = ({}: Props) => {
+  const onTestAudio = () => {
+    console.log("test audio");
+  };
+
+  const onTestLLM = () => {
+    console.log("test llm");
+  };
+
   return (
     <div className="flex-1 px-6 py-4 rounded-lg bg-card">
       <Tabs defaultValue="test" className="h-full">
@@ -25,7 +33,7 @@ const TestLLMSection = ({}: Props) => {
               <div className="mb-4">
                 <h3 className="text-lg font-medium">Test your agent</h3>
               </div>
-              <Button variant="outline" className="w-32">
+              <Button variant="outline" className="w-32" onClick={onTestAudio}>
                 Test
               </Button>
             </div>
@@ -35,7 +43,7 @@ const TestLLMSection = ({}: Props) => {
               <div className="mb-4">
                 <h3 className="text-lg font-medium">Test LLM</h3>
               </div>
-              <Button variant="outline" className="w-32">
+              <Button variant="outline" className="w-32" onClick={onTestLLM}>
                 Start Test
               </Button>
             </div>

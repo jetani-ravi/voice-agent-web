@@ -1,18 +1,28 @@
 import { Pagination } from "@/types/api";
 
+export const AssistantStatus = {
+  SEEDING: "seeding",
+  UPDATING: "updating",
+} as const;
+
+export type AssistantStatus = (typeof AssistantStatus)[keyof typeof AssistantStatus];
+
 export interface Agent {
-  _id: string;
+  _id?: string;
   agent_config: AgentModel;
   agent_prompts?: Record<string, Record<string, string>>;
-  user_id: string;
-  agent_id: string;
-  created_at: string;
-  updated_at: string;
+  webhook_url?: string;
+  assistant_status?: AssistantStatus;
+  user_id?: string;
+  agent_id?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface CreateAgentPayload {
   agent_config: AgentModel;
   agent_prompts?: Record<string, Record<string, string>>;
+  webhook_url?: string;
 }
 
 export type ListAgentsResponse = {
@@ -177,7 +187,7 @@ export interface ConversationConfig {
   incremental_delay?: number;
   number_of_words_for_interruption?: number;
   interruption_backoff_period?: number;
-  hangup_after_llm_call?: boolean;
+  hangup_after_LLMCall?: boolean;
   call_cancellation_prompt?: string;
   backchanneling?: boolean;
   backchanneling_message_gap?: number;

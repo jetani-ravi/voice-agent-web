@@ -33,7 +33,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { generateToolName, API_TOOLS } from "@/constants/api-tools";
+import { generateToolName, API_TOOLS } from "@/constants/agent";
 import { timezones } from "@/lib/time";
 
 interface Props {

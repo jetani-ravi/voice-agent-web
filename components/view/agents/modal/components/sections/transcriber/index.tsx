@@ -25,12 +25,14 @@ import {
 } from "@/app/modules/agents/validation";
 import {
   Agent,
+  AssistantStatus,
   CreateAgentPayload,
 } from "@/app/modules/agents/interface";
 import { PROVIDERS } from "@/constants/providers";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
+import { useRouter } from "next/navigation";
 
 interface Props {
   agent: Agent;
@@ -38,7 +40,9 @@ interface Props {
 
 const TranscriberSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
-  const transcriber = agent.agent_config.tasks[0].tools_config.transcriber;
+  const router = useRouter();
+  const task = agent.agent_config.tasks.find(task => task.task_type === "conversation")
+  const transcriber = task?.tools_config.transcriber;
   const form = useForm<TranscriberValues>({
     resolver: zodResolver(transcriberSchema),
     defaultValues: {
@@ -46,7 +50,7 @@ const TranscriberSection = ({ agent }: Props) => {
       model: transcriber?.model || "",
       keywords: transcriber?.keywords || "",
       interruptionWait:
-        agent.agent_config.tasks[0].task_config
+        task?.task_config
           .number_of_words_for_interruption || 0,
     },
   });
@@ -60,10 +64,13 @@ const TranscriberSection = ({ agent }: Props) => {
   const onSubmit = async (data: TranscriberValues) => {
     try {
       const updatedAgent: CreateAgentPayload = {
+        agent_prompts: {
+          ...agent.agent_prompts,
+        },
         agent_config: {
           ...agent.agent_config,
-          tasks: agent.agent_config.tasks.map((task, index) => {
-            if (index === 0 && task.tools_config.transcriber) {
+          tasks: agent.agent_config.tasks.map((task) => {
+            if (task.task_type === "conversation" && task.tools_config.transcriber) {
               return {
                 ...task,
                 tools_config: {
@@ -85,8 +92,13 @@ const TranscriberSection = ({ agent }: Props) => {
           }),
         },
       };
-      const result = await updateAgent(agent.agent_id, updatedAgent);
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatedAgent)
+        : createAgent(updatedAgent));
       handleToast({ result, form });
+      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error);
     }

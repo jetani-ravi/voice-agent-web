@@ -22,15 +22,17 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { voiceSchema, VoiceValues } from "@/app/modules/agents/validation";
 import {
   Agent,
+  AssistantStatus,
   CreateAgentPayload,
   ElevenLabsConfig,
 } from "@/app/modules/agents/interface";
 import { PROVIDERS } from "@/constants/providers";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
 
 interface Props {
   agent: Agent;
@@ -38,9 +40,13 @@ interface Props {
 
 const VoiceSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
-  const synthesizer = agent.agent_config.tasks[0].tools_config.synthesizer;
-  const transcriber = agent.agent_config.tasks[0].tools_config.transcriber;
-  const taskConfig = agent.agent_config.tasks[0].task_config;
+  const router = useRouter();
+  const task = agent.agent_config.tasks.find(
+    (task) => task.task_type === "conversation"
+  );
+  const synthesizer = task?.tools_config.synthesizer;
+  const transcriber = task?.tools_config.transcriber;
+  const taskConfig = task?.task_config;
   const provider = synthesizer?.provider_config as ElevenLabsConfig;
   const form = useForm<VoiceValues>({
     resolver: zodResolver(voiceSchema),
@@ -67,10 +73,13 @@ const VoiceSection = ({ agent }: Props) => {
   const onSubmit = async (data: VoiceValues) => {
     try {
       const updatedAgent: CreateAgentPayload = {
+        agent_prompts: {
+          ...agent.agent_prompts,
+        },
         agent_config: {
           ...agent.agent_config,
-          tasks: agent.agent_config.tasks.map((task, index) => {
-            if (index === 0 && task.tools_config.synthesizer) {
+          tasks: agent.agent_config.tasks.map((task) => {
+            if (task.task_type === "conversation" && task.tools_config.synthesizer) {
               return {
                 ...task,
                 tools_config: {
@@ -104,8 +113,13 @@ const VoiceSection = ({ agent }: Props) => {
           }),
         },
       };
-      const result = await updateAgent(agent.agent_id, updatedAgent);
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatedAgent)
+        : createAgent(updatedAgent));
       handleToast({ result, form });
+      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error);
     }
@@ -284,7 +298,10 @@ const VoiceSection = ({ agent }: Props) => {
                 <FormItem>
                   <FormLabel>User is Online Message</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input
+                      {...field}
+                      placeholder="Hey, are you still there?"
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

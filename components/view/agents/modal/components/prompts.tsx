@@ -16,10 +16,11 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Agent, CreateAgentPayload } from "@/app/modules/agents/interface";
+import { Agent, AssistantStatus, CreateAgentPayload } from "@/app/modules/agents/interface";
 import { promptsSchema, PromptsValues } from "@/app/modules/agents/validation";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
+import { useRouter } from "next/navigation";
 
 interface Props {
   agent: Agent;
@@ -27,6 +28,7 @@ interface Props {
 
 const PromptsSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
+  const router = useRouter();
   const form = useForm<PromptsValues>({
     resolver: zodResolver(promptsSchema),
     defaultValues: {
@@ -52,8 +54,13 @@ const PromptsSection = ({ agent }: Props) => {
       };
 
       // Make the update API call
-      const result = await updateAgent(agent.agent_id, updatedPayload);
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatedPayload)
+        : createAgent(updatedPayload));
       handleToast({ result, form });
+      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error);
     }

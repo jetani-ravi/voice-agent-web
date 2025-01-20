@@ -16,7 +16,7 @@ import {
   APIParams,
 } from "@/app/modules/agents/interface";
 import { JsonEditor } from "json-edit-react";
-import { API_TOOLS } from "@/constants/api-tools";
+import { API_TOOLS } from "@/constants/agent";
 import { useToast } from "@/hooks/use-toast";
 
 interface Props {

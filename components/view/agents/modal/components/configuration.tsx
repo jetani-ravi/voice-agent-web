@@ -20,6 +20,7 @@ import TranscriberSection from "./sections/transcriber";
 import VoiceSection from "./sections/voice";
 import CallSection from "./sections/call";
 import FunctionsSection from "./sections/functions";
+import PostCallAnalytics from "./sections/analytics";
 
 interface Props {
   agent: Agent;
@@ -98,7 +99,7 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            {/* Post-Call Analysis content */}
+            <PostCallAnalytics agent={agent} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>

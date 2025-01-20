@@ -13,6 +13,7 @@ import React, { useEffect, useState } from "react";
 import {
   Agent,
   APIParams,
+  AssistantStatus,
   CreateAgentPayload,
   ToolDescription,
   ToolModel,
@@ -29,8 +30,9 @@ import CalendarAvailabilityDialog from "./modals/calendar-availability";
 import BookCalendarDialog from "./modals/book-calendar";
 import TransferCallDialog from "./modals/transfer-call";
 import CustomFunctionDialog from "./modals/custom-functions";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
+import { useRouter } from "next/navigation";
 
 interface Props {
   agent: Agent;
@@ -38,6 +40,7 @@ interface Props {
 
 const FunctionsSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
+  const router = useRouter();
   const [apiToolsConfig, setApiToolsConfig] = useState<ToolModel>({
     tools: [],
     tools_params: {},
@@ -50,11 +53,13 @@ const FunctionsSection = ({ agent }: Props) => {
 
   useEffect(() => {
     if (agent) {
+      const task = agent.agent_config.tasks.find(
+        (task) => task.task_type === "conversation"
+      );
       setApiToolsConfig({
-        tools: agent.agent_config.tasks[0]?.tools_config?.api_tools?.tools,
+        tools: task?.tools_config?.api_tools?.tools,
         tools_params:
-          agent.agent_config.tasks[0]?.tools_config?.api_tools?.tools_params ||
-          {},
+          task?.tools_config?.api_tools?.tools_params || {},
       });
     }
   }, [agent]);
@@ -77,7 +82,7 @@ const FunctionsSection = ({ agent }: Props) => {
     setApiToolsConfig((prev) => {
       const updatedTools = editState?.isEditing
         ? prev.tools!.map((t) => (t.name === editState.toolName ? tool : t))
-        : [...prev.tools!.filter((t) => t.name !== tool.name), tool];
+        : [...(prev.tools?.filter((t) => t.name !== tool.name) || []), tool];
 
       return {
         tools: updatedTools,
@@ -205,10 +210,13 @@ const FunctionsSection = ({ agent }: Props) => {
 
   const onSave = async () => {
     const updatePayload: CreateAgentPayload = {
+      agent_prompts: {
+        ...agent.agent_prompts,
+      },
       agent_config: {
         ...agent.agent_config,
-        tasks: agent.agent_config.tasks.map((task, index) => {
-          if (index === 0) {
+        tasks: agent.agent_config.tasks.map((task) => {
+          if (task.task_type === "conversation") {
             return {
               ...task,
               tools_config: {
@@ -225,12 +233,16 @@ const FunctionsSection = ({ agent }: Props) => {
         }),
       },
     };
-    console.log("updatePayload: ", updatePayload);
     try {
-      const result = await updateAgent(agent.agent_id, updatePayload);
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatePayload)
+        : createAgent(updatePayload));
       handleToast({
         result,
       });
+      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
       setEditState(null);
     } catch (error) {
       console.error("Error saving API tools: ", error);

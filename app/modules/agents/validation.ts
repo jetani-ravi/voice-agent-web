@@ -10,11 +10,14 @@ export type PromptsValues = z.infer<typeof promptsSchema>;
 
 // Validation Schema
 export const faqsSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  response: z.string().min(1, "Response is required"),
-  threshold: z.number().min(0.7).max(1),
+  route_name: z.string().min(1, "Route name is required"),
+  response: z.union([
+    z.string().min(1, "Response is required"),
+    z.array(z.string()).min(1, "Response is required")
+  ]),
+  score_threshold: z.number().min(0.7).max(1),
   utterances: z
-    .array(z.string())
+    .array(z.object({ utterance: z.string().min(1, "Utterance is required") }))
     .min(1, "At least one utterance is required")
     .max(20),
 });
@@ -55,6 +58,13 @@ export const callSchema = z.object({
   callTerminate: z.number().min(30).max(1200),
 });
 
+export const postCallAnalyticsSchema = z.object({
+  summarizeCall: z.boolean().optional(),
+  extractCallSummary: z.boolean().optional(),
+  extractCallSummaryPrompt: z.string().optional(),
+  webhookUrl: z.string().optional(),
+});
+
 // Form Values Type
 export type LLMValues = z.infer<typeof llmSchema>;
 
@@ -65,3 +75,5 @@ export type TranscriberValues = z.infer<typeof transcriberSchema>;
 export type VoiceValues = z.infer<typeof voiceSchema>;
 
 export type CallValues = z.infer<typeof callSchema>;
+
+export type PostCallAnalyticsValues = z.infer<typeof postCallAnalyticsSchema>;

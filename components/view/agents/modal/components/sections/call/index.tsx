@@ -20,12 +20,18 @@ import {
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CallValues, callSchema } from "@/app/modules/agents/validation";
-import { Agent, CreateAgentPayload } from "@/app/modules/agents/interface";
+import {
+  Agent,
+  AssistantStatus,
+  CreateAgentPayload,
+} from "@/app/modules/agents/interface";
 import { PROVIDERS } from "@/constants/providers";
-import { updateAgent } from "@/app/modules/agents/action";
+import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
   agent: Agent;
@@ -33,8 +39,12 @@ interface Props {
 
 const CallSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
-  const telephony = agent.agent_config.tasks[0].tools_config.input;
-  const taskConfig = agent.agent_config.tasks[0].task_config;
+  const router = useRouter();
+  const task = agent.agent_config.tasks.find(
+    (task) => task.task_type === "conversation"
+  );
+  const telephony = task?.tools_config.input;
+  const taskConfig = task?.task_config;
   const form = useForm<CallValues>({
     resolver: zodResolver(callSchema),
     defaultValues: {
@@ -50,10 +60,13 @@ const CallSection = ({ agent }: Props) => {
   const onSubmit = async (data: CallValues) => {
     try {
       const updatedAgent: CreateAgentPayload = {
+        agent_prompts: {
+          ...agent.agent_prompts,
+        },
         agent_config: {
           ...agent.agent_config,
-          tasks: agent.agent_config.tasks.map((task, index) => {
-            if (index === 0 && task.tools_config.input) {
+          tasks: agent.agent_config.tasks.map((task) => {
+            if (task.task_type === "conversation") {
               return {
                 ...task,
                 tools_config: {
@@ -81,8 +94,16 @@ const CallSection = ({ agent }: Props) => {
           }),
         },
       };
-      const result = await updateAgent(agent.agent_id, updatedAgent);
+      const result = await (agent.agent_id
+        ? updateAgent(agent.agent_id, updatedAgent)
+        : createAgent(updatedAgent));
       handleToast({ result, form });
+      if (
+        result.success &&
+        result.data?.assistant_status === AssistantStatus.SEEDING
+      ) {
+        router.replace(`/agents/${result.data.agent_id}`);
+      }
     } catch (error) {
       console.error("Something went wrong. Please try again.", error);
     }
@@ -177,7 +198,18 @@ const CallSection = ({ agent }: Props) => {
             <FormItem>
               <FormLabel>Call Hangup Prompt</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Textarea
+                  {...field}
+                  rows={7}
+                  placeholder={`You are an AI assistant determining if a conversation is complete. A conversation is complete if:
+
+1. The user explicitly says they want to stop (e.g., "That's all," "I'm done," "Goodbye," "thank you").
+2. The user seems satisfied, and their goal appears to be achieved.
+3. The user's goal appears achieved based on the conversation history, even without explicit confirmation.
+
+If none of these apply, the conversation is not complete.
+`}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -192,8 +224,11 @@ const CallSection = ({ agent }: Props) => {
             <FormItem>
               <FormLabel>Call Hangup Message</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input {...field} placeholder="Call will now disconnect" />
               </FormControl>
+              <FormDescription>
+                This will be final agent message just before the call hangs up.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -206,6 +241,9 @@ const CallSection = ({ agent }: Props) => {
           render={({ field }) => (
             <FormItem>
               <FormLabel>Call Terminate (s)</FormLabel>
+              <FormDescription>
+                The Call ends after {field.value} seconds of call time.
+              </FormDescription>
               <FormControl>
                 <Slider
                   value={[field.value!]}

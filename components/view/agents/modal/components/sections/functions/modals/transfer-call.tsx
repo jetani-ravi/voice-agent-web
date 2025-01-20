@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { generateToolName, API_TOOLS } from "@/constants/api-tools";
+import { generateToolName, API_TOOLS } from "@/constants/agent";
 
 interface Props {
   isOpen: boolean;
@@ -52,7 +52,6 @@ const formSchema = z.object({
 });
 
 const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
-  console.log("editState: ", editState);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: editState?.defaultValues || {
