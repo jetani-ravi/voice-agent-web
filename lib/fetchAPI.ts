@@ -71,7 +71,6 @@ async function fetchWrapper<T>(
   try {
     // Add query params if they exist
     const url = new URL(`${BASE_URL}${endpoint}`);
-    console.log(url);
     if (options.params) {
       Object.entries(options.params).forEach(([key, value]) => {
         url.searchParams.append(key, value);
@@ -80,7 +79,6 @@ async function fetchWrapper<T>(
 
     // Apply request interceptor
     const interceptedOptions = await requestInterceptor(options);
-    console.log(interceptedOptions);
     // Make the request
     const response = await fetch(url.toString(), {
       ...interceptedOptions,
