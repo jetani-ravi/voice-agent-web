@@ -3,26 +3,31 @@ import { getToken } from "next-auth/jwt";
 import { headers as nextHeaders } from "next/headers";
 import { handleApiResponse } from "./api";
 
-type HttpMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-interface FetchOptions extends Omit<RequestInit, 'method' | 'headers'> {
+interface FetchOptions extends Omit<RequestInit, "method" | "headers"> {
   params?: Record<string, string>;
   requiresAuth?: boolean;
   bearer?: boolean;
+  formData?: boolean;
   headers?: HeadersInit;
 }
 
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL || process.env.FAST_API_URL;
 
 // Request interceptor to add common headers and auth token
-const requestInterceptor = async (options: FetchOptions): Promise<RequestInit> => {
+const requestInterceptor = async (
+  options: FetchOptions
+): Promise<RequestInit> => {
   const requestHeaders = new Headers();
-  requestHeaders.set('Content-Type', 'application/json');
+  if (!options.formData) {
+    requestHeaders.set("Content-Type", "application/json");
+  }
 
   // Add custom headers if provided
   if (options.headers) {
     Object.entries(options.headers).forEach(([key, value]) => {
-      if (typeof value === 'string') {
+      if (typeof value === "string") {
         requestHeaders.set(key, value);
       }
     });
@@ -32,12 +37,12 @@ const requestInterceptor = async (options: FetchOptions): Promise<RequestInit> =
   if (options.requiresAuth || options.bearer) {
     try {
       const headersList = await nextHeaders();
-      const cookie = headersList.get('cookie');
+      const cookie = headersList.get("cookie");
       const token = await getToken({
         req: {
           headers: Object.fromEntries(headersList.entries()),
           cookies: cookie,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
         secret: process.env.NEXTAUTH_SECRET,
         raw: true,
@@ -46,13 +51,13 @@ const requestInterceptor = async (options: FetchOptions): Promise<RequestInit> =
       if (token) {
         if (token) {
           requestHeaders.set(
-            'Authorization',
+            "Authorization",
             options.bearer ? `Bearer ${token}` : token
           );
         }
       }
     } catch (error) {
-      console.error('Error getting auth token:', error);
+      console.error("Error getting auth token:", error);
     }
   }
 
@@ -86,13 +91,14 @@ async function fetchWrapper<T>(
     });
     return handleApiResponse<T>(response);
   } catch (error) {
-    console.error('API Error:', error);
+    console.error("API Error:", error);
     return {
       success: false,
       error: {
-        type: 'SERVER_ERROR',
-        message: error instanceof Error ? error.message : 'Something went wrong'
-      }
+        type: "SERVER_ERROR",
+        message:
+          error instanceof Error ? error.message : "Something went wrong",
+      },
     };
   }
 }
@@ -100,26 +106,26 @@ async function fetchWrapper<T>(
 // Type-safe HTTP method specific functions
 export const api = {
   get: <T>(endpoint: string, options?: FetchOptions) =>
-    fetchWrapper<T>(endpoint, 'GET', options),
+    fetchWrapper<T>(endpoint, "GET", options),
 
   post: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
-    fetchWrapper<T>(endpoint, 'POST', {
+    fetchWrapper<T>(endpoint, "POST", {
       ...options,
-      body: JSON.stringify(body),
+      body: options?.formData ? body as BodyInit : JSON.stringify(body),
     }),
 
   put: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
-    fetchWrapper<T>(endpoint, 'PUT', {
+    fetchWrapper<T>(endpoint, "PUT", {
       ...options,
-      body: JSON.stringify(body),
+      body: options?.formData ? body as BodyInit : JSON.stringify(body),
     }),
 
   patch: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
-    fetchWrapper<T>(endpoint, 'PATCH', {
+    fetchWrapper<T>(endpoint, "PATCH", {
       ...options,
-      body: JSON.stringify(body),
+      body: options?.formData ? body as BodyInit : JSON.stringify(body),
     }),
 
   delete: <T>(endpoint: string, options?: FetchOptions) =>
-    fetchWrapper<T>(endpoint, 'DELETE', options),
+    fetchWrapper<T>(endpoint, "DELETE", options),
 };

@@ -43,6 +43,7 @@ import { useRouter } from "next/navigation";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import FaqsModal from "./faqs-modal";
+import { GRAPH_NODE, VECTOR_DB } from "@/constants/agent";
 
 interface Props {
   agent: Agent;
@@ -185,14 +186,19 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                           ? undefined
                           : [
                               {
-                                ...llmConfig.nodes?.[0],
+                                ...GRAPH_NODE,
                                 rag_config: {
-                                  ...llmConfig.nodes?.[0]?.rag_config,
+                                  temperature: data.temperature,
+                                  model: data.model,
+                                  provider: VECTOR_DB.QDRANT,
+                                  max_tokens: data.tokens,
                                   provider_config: {
                                     ...providerConfig,
                                     vector_id: data.knowledgeBase,
+                                    similarity_top_k: 10,
                                   },
                                 },
+                                prompt: agent?.agent_prompts?.task_1?.system_prompt,
                               },
                             ],
                       agent_information:
@@ -348,7 +354,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     if (value === "add-new") {
-                      router.push(`/knowledge-base`);
+                      window.open(`/knowledge-base`, "_blank");
                     } else {
                       field.onChange(value);
                     }
@@ -365,7 +371,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                         key={knowledgeBase.vector_id}
                         value={knowledgeBase.vector_id}
                       >
-                        {knowledgeBase.fileName}
+                        {knowledgeBase.name}
                       </SelectItem>
                     ))}
                     <SelectItem value="add-new">

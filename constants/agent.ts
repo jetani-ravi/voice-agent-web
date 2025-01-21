@@ -327,7 +327,31 @@ export const DEFAULT_AGENT: CreateAgentPayload = {
   },
   agent_prompts: {
     task_1: {
-      system_prompt: "You are a helpful assistant.",
+      system_prompt:
+        "You will keep your sentences short and crisp. You will never reply with more than 2 sentences at a time. You will stick to context throughout.",
     },
   },
+};
+
+export const GRAPH_NODE = {
+  edges: [],
+  description: null,
+  id: "root",
+  rag_config: {
+    temperature: 0.2,
+    model: "gpt-3.5-turbo",
+    provider: "qdrant",
+    max_tokens: 150.0,
+    provider_config: {
+      vector_id: "",
+      similarity_top_k: 10.0,
+    },
+  },
+  prompt: "",
+  completion_check: null,
+};
+
+export const VECTOR_DB = {
+  LANCEDB: "lancedb",
+  QDRANT: "qdrant",
 };

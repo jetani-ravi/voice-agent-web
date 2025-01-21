@@ -5,10 +5,13 @@ import { InitiateCall } from "./interface";
 
 export const initiateCall = async (payload: InitiateCall) => {
   const url = `${process.env.TELEPHONY_API_URL}/call`;
-  console.log(url);
   const cookieStore = await cookies();
-  const token = cookieStore.get("authjs.session-token")?.value;
-  console.log(token);
+  let token;
+  if (process.env.NODE_ENV === "production") {
+    token = cookieStore.get("__Secure-authjs.session-token")?.value;
+  } else {
+    token = cookieStore.get("authjs.session-token")?.value;
+  }
   const response = await fetch(url, {
     method: "POST",
     body: JSON.stringify(payload),

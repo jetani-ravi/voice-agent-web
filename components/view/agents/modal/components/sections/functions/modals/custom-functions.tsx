@@ -16,7 +16,7 @@ import {
   APIParams,
 } from "@/app/modules/agents/interface";
 import { JsonEditor } from "json-edit-react";
-import { API_TOOLS } from "@/constants/agent";
+import { API_TOOLS, generateToolName } from "@/constants/agent";
 import { useToast } from "@/hooks/use-toast";
 
 interface Props {
@@ -65,7 +65,11 @@ const CustomFunctionDialog = ({
         });
       }
     } else {
-      setJsonData(API_TOOLS.CUSTOM_FUNCTION);
+      const uniqueKey = generateToolName();
+      setJsonData({
+        ...API_TOOLS.CUSTOM_FUNCTION,
+        key: `custom_${uniqueKey}`,
+      });
     }
   }, [isOpen, editState, apiToolsConfig]);
 
@@ -118,7 +122,7 @@ const CustomFunctionDialog = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="min-w-[60%]">
+      <DialogContent className="min-w-[60%] h-[90vh]">
         <DialogHeader>
           <DialogTitle>Your Custom Function Configuration</DialogTitle>
           <DialogDescription>
@@ -127,7 +131,7 @@ const CustomFunctionDialog = ({
             param, url, and api_token (optional).
           </DialogDescription>
         </DialogHeader>
-        <div className="grid gap-4 py-4">
+        <div className="grid gap-4 py-4 h-full overflow-y-auto">
           <JsonEditor
             data={jsonData}
             minWidth="100%"

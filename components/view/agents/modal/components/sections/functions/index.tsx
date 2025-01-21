@@ -180,7 +180,7 @@ const FunctionsSection = ({ agent }: Props) => {
       } catch (error) {
         console.error("Error parsing tool params:", error);
       }
-    } else if (tool?.key === "custom_function") {
+    } else if (tool?.key.startsWith("custom_")) {
       setDialogs((prev) => ({
         ...prev,
         customFunction: true,

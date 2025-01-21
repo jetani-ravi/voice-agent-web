@@ -1,4 +1,17 @@
 import moment from "moment-timezone";
+import { format } from "date-fns";
+
+export const formatDate = (date: string | Date) => {
+  return format(new Date(date), "MMM dd, yyyy");
+};
+
+export const formatDateTime = (date: string | Date) => {
+  return format(new Date(date), "MMM dd, yyyy hh:mm:ss");
+};
+
+export const formatTime = (date: string | Date) => {
+  return format(new Date(date), "hh:mm:ss");
+};
 
 export const timezones = moment.tz.names().map((tz) => {
   const offsetMinutes = moment.tz(tz).utcOffset();
