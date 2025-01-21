@@ -2,6 +2,7 @@ import { Pagination } from "@/types/api";
 
 export interface KnowledgeBase {
   _id: string;
+  name: string;
   fileName: string;
   description: string;
   similarityTopK: string;
@@ -12,6 +13,7 @@ export interface KnowledgeBase {
   updated_at: string;
   deleted_at: string;
   isDeleted: boolean;
+  error?: string;
 }
 
 export type ListKnowledgeBasesResponse = {

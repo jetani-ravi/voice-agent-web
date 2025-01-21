@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { generateToolName, API_TOOLS } from "@/constants/agent";
-import { timezones } from "@/lib/time";
+import { timezones } from "@/lib/date-time";
 
 interface Props {
   isOpen: boolean;

@@ -15,7 +15,7 @@ interface DataTableProps {
 }
 
 const DataTable = ({ agents, pagination }: DataTableProps) => {
-  const searchableColumns = ["agent_config.agent_name", "created_at"];
+  const sortableColumns = ["agent_config.agent_name", "created_at"];
   const router = useRouter();
   const { handleToast } = useToastHandler();
   const onEdit = (agent: Agent) => {
@@ -45,7 +45,7 @@ const DataTable = ({ agents, pagination }: DataTableProps) => {
       columns={memoizedColumns}
       data={agents}
       pageCount={Math.ceil(pagination.count / pagination.limit)}
-      searchableColumns={searchableColumns}
+      sortableColumns={sortableColumns}
       onRowClick={handleRowClick}
     />
   );
