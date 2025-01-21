@@ -15,7 +15,7 @@ interface DataTableProps {
 }
 
 const DataTable = ({ knowledgeBases, pagination }: DataTableProps) => {
-  const searchableColumns = ["name", "fileName", "status", "created_at"];
+  const sortableColumns = ["name", "fileName", "status", "created_at"];
   const [open, setOpen] = useState(false);
   const [knowledgeBase, setKnowledgeBase] = useState<KnowledgeBase | null>(
     null
@@ -47,7 +47,7 @@ const DataTable = ({ knowledgeBases, pagination }: DataTableProps) => {
         columns={memoizedColumns}
         data={knowledgeBases}
         pageCount={Math.ceil(pagination.count / pagination.limit)}
-        searchableColumns={searchableColumns}
+        sortableColumns={sortableColumns}
       />
       <KnowledgeBaseForm
         open={open}

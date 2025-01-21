@@ -27,7 +27,7 @@ interface ControlledTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   pageCount: number;
-  searchableColumns: string[];
+  sortableColumns: string[];
   filterElements?: React.ReactNode;
   canSearch?: boolean;
   canViewOptions?: boolean;
@@ -38,7 +38,7 @@ const ControlledTable = <TData, TValue>({
   columns,
   data,
   pageCount,
-  searchableColumns,
+  sortableColumns,
   filterElements,
   canSearch = true,
   canViewOptions = true,
@@ -138,13 +138,13 @@ const ControlledTable = <TData, TValue>({
                       <div
                         className={
                           header.column.getCanSort() &&
-                          searchableColumns.includes(header.id)
+                          sortableColumns.includes(header.id)
                             ? "cursor-pointer select-none"
                             : ""
                         }
                         onClick={() =>
                           header.column.getCanSort() &&
-                          searchableColumns.includes(header.id) &&
+                          sortableColumns.includes(header.id) &&
                           handleSort(header.id)
                         }
                       >
