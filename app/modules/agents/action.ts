@@ -42,3 +42,10 @@ export const createAgent = async (payload: CreateAgentPayload) => {
   revalidatePath("/agents", "layout");
   return response;
 };
+
+export const deleteAgent = async (agent_id: string) => {
+  const url = `/agent/${agent_id}`;
+  const response = await api.delete(url, { bearer: true });
+  revalidatePath("/agents", "layout");
+  return response;
+};

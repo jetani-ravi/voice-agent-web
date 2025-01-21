@@ -3,20 +3,21 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { Agent } from "@/app/modules/agents/interface";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Edit2, Clipboard } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { DataTableColumnHeader } from "@/components/ui/table/header";
 import { Checkbox } from "@/components/ui/checkbox";
+import DeletePopover from "../../delete-popover";
 
-export const columns: ColumnDef<Agent>[] = [
+interface GetColumnsProps {
+  onEdit: (agent: Agent) => void;
+  onDelete: (agent: Agent) => void;
+}
+
+export const getColumns = ({
+  onEdit,
+  onDelete,
+}: GetColumnsProps): ColumnDef<Agent>[] => [
   {
     id: "select",
     header: ({ table }) => (
@@ -80,32 +81,50 @@ export const columns: ColumnDef<Agent>[] = [
     cell: ({ row }) => {
       const agent = row.original;
 
-      const copyAgentId = () => {
-        navigator.clipboard.writeText(agent._id);
+      const copyAgentId = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        navigator.clipboard.writeText(agent.agent_id!);
         toast({
           title: "Agent ID copied to clipboard",
           description: "You can now paste it anywhere you need.",
         });
       };
 
+      const handleEdit = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        onEdit(agent);
+      };
+
+      const handleDelete = (event: React.MouseEvent) => {
+        event.stopPropagation();
+        onDelete(agent);
+      };
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem onClick={copyAgentId}>
-              Copy agent ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View agent</DropdownMenuItem>
-            <DropdownMenuItem>Edit agent</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-1">
+          {/* Copy Agent ID */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-primary"
+            onClick={copyAgentId}
+          >
+            <Clipboard className="h-4 w-4" />
+            <span className="sr-only">Copy Agent ID</span>
+          </Button>
+          {/* Edit Agent */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-primary"
+            onClick={handleEdit}
+          >
+            <Edit2 className="h-4 w-4" />
+            <span className="sr-only">Edit Agent</span>
+          </Button>
+          {/* Delete Agent */}
+          <DeletePopover onDelete={handleDelete} />
+        </div>
       );
     },
   },

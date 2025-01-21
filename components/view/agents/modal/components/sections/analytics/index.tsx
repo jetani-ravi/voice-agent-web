@@ -57,29 +57,34 @@ const PostCallAnalytics = ({ agent }: Props) => {
   const onSubmit = async (data: PostCallAnalyticsValues) => {
     try {
       // Map existing tasks and update if necessary
-      const updatedTasks = agent.agent_config.tasks.map((task) => {
-        if (task.task_type === "summarization" && data.summarizeCall) {
-          // Update summarization task
-          return { ...task };
-        }
-        if (task.task_type === "extraction" && data.extractCallSummary) {
-          // Update extraction task
-          return {
-            ...task,
-            tools_config: {
-              ...task.tools_config,
-              llm_agent: {
-                ...task.tools_config.llm_agent,
-                extraction_details: data.extractCallSummaryPrompt,
+      const updatedTasks = agent.agent_config.tasks
+        .filter((task) => {
+          if (task.task_type === "summarization" && !data.summarizeCall) {
+            return false; // Remove summarization task if toggle is off
+          }
+          if (task.task_type === "extraction" && !data.extractCallSummary) {
+            return false; // Remove extraction task if toggle is off
+          }
+          return true; // Keep all other tasks
+        })
+        .map((task) => {
+          if (task.task_type === "extraction" && data.extractCallSummary) {
+            // Update extraction task if toggle is on
+            return {
+              ...task,
+              tools_config: {
+                ...task.tools_config,
+                llm_agent: {
+                  ...task.tools_config.llm_agent,
+                  extraction_details: data.extractCallSummaryPrompt,
+                },
               },
-            },
-          };
-        }
-        // Preserve all other tasks
-        return task;
-      });
+            };
+          }
+          return task; // Preserve other tasks as is
+        });
 
-      // Add new tasks only when toggled on
+      // Add new tasks if toggles are on and tasks don't exist
       if (data.summarizeCall && !summarizationTask) {
         updatedTasks.push({
           task_type: "summarization",
@@ -107,6 +112,8 @@ const PostCallAnalytics = ({ agent }: Props) => {
         },
         webhook_url: data.webhookUrl,
       };
+
+      console.log("updatedAgent", updatedAgent);
 
       const result = await (agent.agent_id
         ? updateAgent(agent.agent_id, updatedAgent)
