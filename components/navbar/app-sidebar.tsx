@@ -58,8 +58,8 @@ const data = {
       icon: BookOpen,
     },
     {
-      title: "Phone",
-      url: "/phone",
+      title: "Phone Numbers",
+      url: "/phone-numbers",
       icon: Phone,
       isActive: true,
     },

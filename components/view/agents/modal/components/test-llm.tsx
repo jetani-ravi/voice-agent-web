@@ -10,16 +10,13 @@ interface Props {
 
 const TestLLMSection = ({ agent }: Props) => {
   const onTestAudio = async () => {
-    console.log("test audio");
-    const response = await initiateCall({
+    await initiateCall({
       recipient_phone_number: "+916356827895",
       agent_id: agent.agent_id!,
     });
-    console.log(response);
   };
 
   const onTestLLM = () => {
-    console.log("test llm");
   };
 
   return (

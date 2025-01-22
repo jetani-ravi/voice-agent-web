@@ -19,6 +19,7 @@ import {
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -166,19 +167,24 @@ const KnowledgeBaseForm = ({ open, setOpen, knowledgeBase }: Props) => {
                         </Button>
                       </div>
                     ) : (
-                      <FormControl>
-                        <Input
-                          type="file"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              setFileName(file.name);
-                              onChange(file);
-                            }
-                          }}
-                          {...field}
-                        />
-                      </FormControl>
+                      <>
+                        <FormDescription>
+                          Currently supports .pdf only.
+                        </FormDescription>
+                        <FormControl>
+                          <Input
+                            type="file"
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) {
+                                setFileName(file.name);
+                                onChange(file);
+                              }
+                            }}
+                            {...field}
+                          />
+                        </FormControl>
+                      </>
                     )}
                     <FormMessage />
                   </FormItem>
