@@ -2,11 +2,14 @@
 
 import * as React from "react";
 import {
+  AudioLines,
   AudioWaveform,
   BookOpen,
   Bot,
   Command,
   GalleryVerticalEnd,
+  KeyRound,
+  Package,
   Phone,
   Settings2,
 } from "lucide-react";
@@ -62,6 +65,21 @@ const data = {
       url: "/phone-numbers",
       icon: Phone,
       isActive: true,
+    },
+    {
+      title: "Voice Library",
+      url: "/voice-library",
+      icon: AudioLines,
+    },
+    {
+      title: "Providers",
+      url: "/providers",
+      icon: Package,
+    },
+    {
+      title: "API Keys",
+      url: "/api-keys",
+      icon: KeyRound,
     },
     {
       title: "Settings",

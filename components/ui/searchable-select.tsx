@@ -48,12 +48,12 @@ export function SearchableSelect({
           className={cn("justify-between", className)}
         >
           {value ? options.find((option) => option.value === value)?.label : placeholder}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className={cn("p-0", dropdownClassName)}>
         <Command>
-          <CommandInput placeholder={placeholder} disabled={disabled} />
+          <CommandInput placeholder={placeholder} disabled={disabled} className="h-9" />
           <CommandList>
             <CommandEmpty>{emptyMessage}</CommandEmpty>
             <CommandGroup>
@@ -67,8 +67,8 @@ export function SearchableSelect({
                     setOpen(false)
                   }}
                 >
-                  <Check className={cn("mr-2 h-4 w-4", value === option.value ? "opacity-100" : "opacity-0")} />
                   {option.label}
+                  <Check className={cn("ml-auto", value === option.value ? "opacity-100" : "opacity-0")} />
                 </CommandItem>
               ))}
             </CommandGroup>

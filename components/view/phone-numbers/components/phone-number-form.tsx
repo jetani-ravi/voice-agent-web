@@ -170,7 +170,7 @@ const PhoneNumberForm = ({ open, setOpen }: Props) => {
               control={form.control}
               name="country"
               render={({ field }) => (
-                <FormItem className="flex-1 w-full">
+                <FormItem>
                   <FormControl>
                     <SearchableSelect
                       options={countries}
