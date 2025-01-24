@@ -49,7 +49,9 @@ export function createSearchParams(params: SearchParams): {
   };
 }
 
-export function createParams(params: SearchParams): string {
+export function createParams(
+  params: SearchParams | Record<string, string | number | boolean | undefined>
+): string {
   const searchParams = new URLSearchParams();
 
   Object.entries(params).forEach(([key, value]) => {

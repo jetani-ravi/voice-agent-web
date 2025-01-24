@@ -113,8 +113,6 @@ const PostCallAnalytics = ({ agent }: Props) => {
         webhook_url: data.webhookUrl,
       };
 
-      console.log("updatedAgent", updatedAgent);
-
       const result = await (agent.agent_id
         ? updateAgent(agent.agent_id, updatedAgent)
         : createAgent(updatedAgent));

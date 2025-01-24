@@ -91,17 +91,22 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
           </AccordionContent>
         </AccordionItem>
 
-        <AccordionItem value="post-call">
-          <AccordionTrigger className="text-sm font-medium">
-            <div className="flex items-center gap-2">
-              <ChartBar className="h-4 w-4" />
-              <span>Post-Call Analysis</span>
-            </div>
-          </AccordionTrigger>
-          <AccordionContent>
-            <PostCallAnalytics agent={agent} />
-          </AccordionContent>
-        </AccordionItem>
+        {agent.agent_id && (
+          <AccordionItem value="post-call">
+            <AccordionTrigger
+              className="text-sm font-medium"
+              disabled={!agent.agent_id}
+            >
+              <div className="flex items-center gap-2">
+                <ChartBar className="h-4 w-4" />
+                <span>Post-Call Analysis</span>
+              </div>
+            </AccordionTrigger>
+            <AccordionContent>
+              <PostCallAnalytics agent={agent} />
+            </AccordionContent>
+          </AccordionItem>
+        )}
       </Accordion>
     </div>
   );

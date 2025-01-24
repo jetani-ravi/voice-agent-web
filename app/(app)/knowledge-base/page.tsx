@@ -12,7 +12,7 @@ const breadcrumbs = [
   },
 ];
 
-const KnowledgeBasePage = async (props: { searchParams: SearchParams }) => {
+const KnowledgeBasePage = async (props: { searchParams: Promise<SearchParams> }) => {
   const searchParams = await props.searchParams;
   const params: SearchParams = createSearchParams(searchParams);
 

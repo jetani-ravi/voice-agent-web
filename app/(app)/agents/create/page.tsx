@@ -16,6 +16,7 @@ const breadcrumbs = [
   },
 ];
 
+
 const CreateAgent = async () => {
   const knowledgeBase = await getKnowledgeBases({});
   const { knowledge_bases } = knowledgeBase.data!;
@@ -27,10 +28,12 @@ const CreateAgent = async () => {
         <AgentDetailDrawer
           agent={DEFAULT_AGENT}
           knowledgeBases={knowledge_bases}
-        />
+          />
       </ScreenContent>
     </ScreenContainer>
   );
 };
 
 export default CreateAgent;
+
+export const dynamic = "force-dynamic";

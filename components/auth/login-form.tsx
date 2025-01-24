@@ -56,7 +56,7 @@ export function LoginForm({
 
         const result = await login(formData);
 
-        handleToast({ result });
+        handleToast({ result, successMessage: "Login successful!" });
         if (result.success) {
           router.push("/");
         }
