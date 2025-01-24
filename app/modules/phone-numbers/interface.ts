@@ -3,6 +3,7 @@ import { Pagination } from "@/types/api";
 export type InitiateCall = {
   recipient_phone_number: string;
   agent_id: string;
+  from_phone_number?: string;
 };
 
 export interface TwilioCredentials {

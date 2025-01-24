@@ -23,6 +23,8 @@ interface SearchableSelectProps {
   disabled?: boolean
   defaultValue?: string
   dropdownClassName?: string
+  selectedLabel?: string
+  align?: "start" | "end" | "center"
 }
 
 export function SearchableSelect({
@@ -34,6 +36,8 @@ export function SearchableSelect({
   disabled,
   defaultValue,
   dropdownClassName,
+  selectedLabel,
+  align = "start",
 }: SearchableSelectProps) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState(defaultValue)
@@ -47,11 +51,11 @@ export function SearchableSelect({
           aria-expanded={open}
           className={cn("justify-between", className)}
         >
-          {value ? options.find((option) => option.value === value)?.label : placeholder}
+          {value ? (selectedLabel || options.find((option) => option.value === value)?.label) : placeholder}
           <ChevronsUpDown className="opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className={cn("p-0", dropdownClassName)}>
+      <PopoverContent className={cn("p-0", dropdownClassName)} align={align}>
         <Command>
           <CommandInput placeholder={placeholder} disabled={disabled} className="h-9" />
           <CommandList>
