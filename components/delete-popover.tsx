@@ -6,12 +6,15 @@ import {
 } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface DeletePopoverProps {
   onDelete: (event: React.MouseEvent) => void;
   title?: string;
   description?: string;
   disabled?: boolean;
+  align?: "center" | "end" | "start";
+  className?: string;
 }
 
 const DeletePopover = ({
@@ -19,6 +22,8 @@ const DeletePopover = ({
   title = "Are you sure you want to delete this?",
   description = "This action cannot be undone.",
   disabled = false,
+  align = "end",
+  className = "",
 }: DeletePopoverProps) => {
   const [open, setOpen] = React.useState(false);
 
@@ -39,14 +44,17 @@ const DeletePopover = ({
         <Button
           variant="ghost"
           size="icon"
-          className="text-muted-foreground hover:text-destructive"
+          className={cn(
+            "text-muted-foreground hover:text-destructive",
+            className
+          )}
           disabled={disabled}
         >
           <Trash2 className="h-4 w-4" />
           <span className="sr-only">Delete Agent</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent align="end">
+      <PopoverContent align={align}>
         <div className="text-sm font-medium">{title}</div>
         <div className="text-sm text-muted-foreground">{description}</div>
         <div className="flex justify-end gap-2 mt-2">
