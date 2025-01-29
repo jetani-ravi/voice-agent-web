@@ -1,1 +1,1 @@
-export const FAST_API_ROUTE = "/api/python"
+export const PROVIDERS_LOGO_BASE_PATH = "/providers-logo"

@@ -74,3 +74,10 @@ export const PROVIDERS = [
     label: "Plivo",
   },
 ];
+
+export const PROVIDERS_STATUS = {
+  ACTIVE: "active",
+  INACTIVE: "inactive",
+} as const;
+
+export type ProvidersStatus = typeof PROVIDERS_STATUS[keyof typeof PROVIDERS_STATUS];

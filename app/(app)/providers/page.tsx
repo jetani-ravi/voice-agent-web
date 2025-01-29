@@ -1,6 +1,8 @@
+import { getProvidersWithConnection } from "@/app/modules/providers/action";
 import { Header } from "@/components/header/header";
 import { ScreenContainer, ScreenContent } from "@/components/screen-container";
-import { createSearchParams, SearchParams } from "@/lib/searchParams";
+import ProvidersList from "@/components/view/providers";
+import { SearchParams } from "@/lib/searchParams";
 
 const breadcrumbs = [
   {
@@ -9,18 +11,17 @@ const breadcrumbs = [
   },
 ];
 
-const ProvidersPage = async (props: { searchParams: Promise<SearchParams> }) => {
+const ProvidersPage = async (props: {
+  searchParams: Promise<SearchParams>;
+}) => {
   const searchParams = await props.searchParams;
-  const params: SearchParams = createSearchParams(searchParams);
-
-  console.log(params);
+  const response = await getProvidersWithConnection(searchParams);
+  const { providers } = response.data!;
   return (
     <ScreenContainer>
-      <Header
-        breadcrumbs={breadcrumbs}
-      />
+      <Header breadcrumbs={breadcrumbs} />
       <ScreenContent>
-        <div>Providers</div>
+        <ProvidersList systemProviders={providers} />
       </ScreenContent>
     </ScreenContainer>
   );
