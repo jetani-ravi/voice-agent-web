@@ -32,6 +32,7 @@ interface ControlledTableProps<TData, TValue> {
   canSearch?: boolean;
   canViewOptions?: boolean;
   onRowClick?: (row: TData) => void;
+  searchPlaceholder?: string;
 }
 
 const ControlledTable = <TData, TValue>({
@@ -43,6 +44,7 @@ const ControlledTable = <TData, TValue>({
   canSearch = true,
   canViewOptions = true,
   onRowClick,
+  searchPlaceholder = "Search...",
 }: ControlledTableProps<TData, TValue>) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -116,7 +118,7 @@ const ControlledTable = <TData, TValue>({
         {canSearch && (
           <div className="flex gap-2 items-center">
             <Input
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
               value={searchTerm}
               onChange={handleSearchChange}
             />
@@ -191,7 +193,7 @@ const ControlledTable = <TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination 
+      <DataTablePagination
         table={table}
         onPageChange={handlePageChange}
         onPageSizeChange={handlePageSizeChange}
@@ -201,4 +203,3 @@ const ControlledTable = <TData, TValue>({
 };
 
 export default ControlledTable;
-
