@@ -156,7 +156,7 @@ const PhoneNumberForm = ({ open, setOpen }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={handleToggle}>
-      <DialogContent className="">
+      <DialogContent className="overflow-y-auto max-h-screen">
         <DialogHeader>
           <DialogTitle>Buy Phone Number</DialogTitle>
           <DialogDescription>

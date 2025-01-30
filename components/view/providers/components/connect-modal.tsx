@@ -92,7 +92,7 @@ export const ConnectProviderDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={handleToggle}>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto max-h-screen">
         <DialogHeader>
           <DialogTitle>Connect to {provider.name}</DialogTitle>
           <DialogDescription>

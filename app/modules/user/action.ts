@@ -1,6 +1,6 @@
 "use server";
 import { ApiResponse } from "@/types/api";
-import { AuthResponse } from "./interface";
+import { AuthResponse, User } from "./interface";
 import { loginSchema, signUpSchema } from "./validation";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
@@ -68,3 +68,9 @@ export async function login(
     return { success: false, error: "Something went wrong" };
   }
 }
+
+export const me = async () => {
+  const url = `/user/me`;
+  const response = await api.get<User>(url, { bearer: true });
+  return response;
+};
