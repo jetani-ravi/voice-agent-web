@@ -25,7 +25,8 @@ export interface PhoneNumberProperties {
 
 export interface PhoneNumber {
   _id: string;
-  phoneNumber: string;
+  phone_number: string;
+  telephony_provider: string;
   price?: number;
   location?: string;
   twilio_sid?: string;
@@ -37,7 +38,7 @@ export interface PhoneNumber {
   created_at?: string;
   updated_at?: string;
   deleted_at?: string;
-  isDeleted?: boolean;
+  is_deleted?: boolean;
 }
 
 export type AvailablePhoneNumbers = {

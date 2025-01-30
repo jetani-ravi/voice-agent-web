@@ -45,6 +45,7 @@ export function SignUpForm({
       email: "",
       password: "",
       confirmPassword: "",
+      organizationName: "",
     },
   });
 
@@ -162,6 +163,19 @@ export function SignUpForm({
                         <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <PasswordInput field={field} placeholder="********" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="organizationName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Organization Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="My Organization" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

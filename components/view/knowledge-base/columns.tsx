@@ -67,8 +67,8 @@ export const getColumns = ({
     },
   },
   {
-    id: "fileName",
-    accessorKey: "fileName",
+    id: "file_name",
+    accessorKey: "file_name",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="File Name" />
     ),

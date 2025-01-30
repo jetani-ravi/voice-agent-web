@@ -10,6 +10,9 @@ export interface SortParams {
 
 export interface SearchParams extends PaginationParams, SortParams {
   search?: string;
+  provider?: string;
+  language?: string;
+  gender?: string;
 }
 
 export function createPaginationParams(params: PaginationParams): {
@@ -35,17 +38,11 @@ export function createSortParams(params: SortParams): {
   };
 }
 
-export function createSearchParams(params: SearchParams): {
-  skip: number;
-  limit: number;
-  search?: string;
-  sort?: string;
-  order?: "asc" | "desc";
-} {
+export function createSearchParams(params: SearchParams): SearchParams {
   return {
     ...createPaginationParams(params),
     ...createSortParams(params),
-    search: params.search,
+    ...params,
   };
 }
 

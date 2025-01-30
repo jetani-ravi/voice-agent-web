@@ -42,7 +42,7 @@ interface Props {
 const KnowledgeBaseForm = ({ open, setOpen, knowledgeBase }: Props) => {
   const { handleToast } = useToastHandler();
   const [fileName, setFileName] = useState<string | null>(
-    knowledgeBase?.fileName || null
+    knowledgeBase?.file_name || null
   );
   const form = useForm<KnowledgeBaseValues>({
     resolver: zodResolver(
@@ -64,7 +64,7 @@ const KnowledgeBaseForm = ({ open, setOpen, knowledgeBase }: Props) => {
         description: knowledgeBase.description,
         file: undefined,
       });
-      setFileName(knowledgeBase.fileName);
+      setFileName(knowledgeBase.file_name);
     } else {
       setFileName(null);
       form.reset();

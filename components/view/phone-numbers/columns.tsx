@@ -60,8 +60,8 @@ export const getColumns = ({
     },
   },
   {
-    id: "telephonyProvider",
-    accessorKey: "telephonyProvider",
+    id: "telephony_provider",
+    accessorKey: "telephony_provider",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Telephony Provider" />
     ),
@@ -104,7 +104,7 @@ export const getColumns = ({
 
       const copyPhoneNumber = (event: React.MouseEvent) => {
         event.stopPropagation();
-        navigator.clipboard.writeText(phoneNumber.phoneNumber!);
+        navigator.clipboard.writeText(phoneNumber.phone_number!);
         toast({
           title: "Phone number copied to clipboard",
           description: "You can now paste it anywhere you need.",

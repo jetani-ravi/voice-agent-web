@@ -1,5 +1,7 @@
+import { getVoiceLibrary } from "@/app/modules/voice-library/action";
 import { Header } from "@/components/header/header";
 import { ScreenContainer, ScreenContent } from "@/components/screen-container";
+import DataTable from "@/components/view/voice-library/data-table";
 import { createSearchParams, SearchParams } from "@/lib/searchParams";
 
 const breadcrumbs = [
@@ -9,18 +11,23 @@ const breadcrumbs = [
   },
 ];
 
-const VoiceLibraryPage = async (props: { searchParams: Promise<SearchParams> }) => {
+const VoiceLibraryPage = async (props: {
+  searchParams: Promise<SearchParams>;
+}) => {
   const searchParams = await props.searchParams;
-  const params: SearchParams = createSearchParams(searchParams);
+  const limit = searchParams.limit ? searchParams.limit : 20;
+  const params: SearchParams = createSearchParams({
+    ...searchParams,
+    limit,
+  });
 
-  console.log(params);
+  const voiceLibrary = await getVoiceLibrary(params);
+  const { voices, pagination } = voiceLibrary.data!;
   return (
     <ScreenContainer>
-      <Header
-        breadcrumbs={breadcrumbs}
-      />
+      <Header breadcrumbs={breadcrumbs} />
       <ScreenContent>
-        <div>Voice Library</div>
+        <DataTable voices={voices} pagination={pagination} />
       </ScreenContent>
     </ScreenContainer>
   );

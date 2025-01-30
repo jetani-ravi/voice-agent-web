@@ -110,7 +110,7 @@ const PhoneNumberForm = ({ open, setOpen }: Props) => {
       (number) => number.phoneNumber === phoneNumber
     );
     const payload: BuyPhoneNumber = {
-      phoneNumber: phoneNumber,
+      phone_number: phoneNumber,
       price: 1.15,
       location: phoneNumberData?.location,
       user_id: session?.user?.id || "",

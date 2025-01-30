@@ -4,12 +4,11 @@ export interface User {
   name: string;
   admin: boolean;
   wallet: number;
-  isFirstTimeLogin: boolean;
-  llmModels: string[];
-  voices: string[];
+  is_first_time_login: boolean;
+  last_login_at: string | null;
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
 }
 
-export type AuthResponse = User
+export type AuthResponse = User;
