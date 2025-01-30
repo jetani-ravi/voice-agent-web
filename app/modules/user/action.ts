@@ -15,6 +15,7 @@ export async function signUp(
       email: values.get("email"),
       password: values.get("password"),
       confirmPassword: values.get("confirmPassword"),
+      organizationName: values.get("organizationName"),
     });
 
     if (!parsed.success) {
@@ -26,8 +27,9 @@ export async function signUp(
 
     const response = await api.post<AuthResponse>(`/user/signup`, {
       name: parsed.data.name,
-      email: parsed.data.email, 
-      password: parsed.data.password
+      email: parsed.data.email,
+      password: parsed.data.password,
+      organization_name: parsed.data.organizationName,
     });
     return response;
   } catch (error) {

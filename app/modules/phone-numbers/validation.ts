@@ -8,7 +8,7 @@ export const searchPhoneNumbersSchema = z.object({
 export type SearchPhoneNumbers = z.infer<typeof searchPhoneNumbersSchema>;
 
 export const buyPhoneNumberSchema = z.object({
-  phoneNumber: z.string().min(1, { message: "Phone number is required" }),
+  phone_number: z.string().min(1, { message: "Phone number is required" }),
   user_id: z.string().min(1, { message: "User ID is required" }),
   price: z.number().optional(),
   location: z.string().optional(),

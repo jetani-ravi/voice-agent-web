@@ -133,10 +133,10 @@ const ProvidersList = ({ systemProviders }: Props) => {
                     <CardHeader className="flex-grow">
                       <div className="flex items-center space-x-4">
                         <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center overflow-hidden">
-                          {provider?.iconPath ? (
+                          {provider?.icon_path ? (
                             <Image
                               src={
-                                `${PROVIDERS_LOGO_BASE_PATH}/${provider.iconPath}` ||
+                                `${PROVIDERS_LOGO_BASE_PATH}/${provider.icon_path}` ||
                                 "/assets/error.svg"
                               }
                               alt={`${provider.name} icon`}

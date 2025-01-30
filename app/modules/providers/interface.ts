@@ -32,7 +32,7 @@ export interface ProvidersWithConnection {
   credentials: Record<string, CredentialConfig>;
   is_supported?: boolean;
   version?: number;
-  iconPath?: string;
+  icon_path?: string;
   created_at: string;
   updated_at: string;
   connection: ProvidersConnection | null;
