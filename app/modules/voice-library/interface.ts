@@ -17,6 +17,7 @@ export interface Voice {
   is_default: boolean;
   created_at: string;
   updated_at: string;
+  is_added?: boolean;
 }
 
 export interface ListVoiceResponse {

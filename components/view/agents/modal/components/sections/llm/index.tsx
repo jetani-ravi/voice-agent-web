@@ -198,7 +198,8 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                                     similarity_top_k: 10,
                                   },
                                 },
-                                prompt: agent?.agent_prompts?.task_1?.system_prompt,
+                                prompt:
+                                  agent?.agent_prompts?.task_1?.system_prompt,
                               },
                             ],
                       agent_information:
@@ -246,7 +247,13 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
             <FormItem>
               <FormLabel>Provider</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("model", ""); // Reset model field
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>

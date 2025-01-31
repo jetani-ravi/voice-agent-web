@@ -26,19 +26,20 @@ import {
   CreateAgentPayload,
   ElevenLabsConfig,
 } from "@/app/modules/agents/interface";
-import { PROVIDERS } from "@/constants/providers";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
+import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
 
 interface Props {
   agent: Agent;
+  organization: ActiveOrganizationDetails;
 }
 
-const VoiceSection = ({ agent }: Props) => {
+const VoiceSection = ({ agent, organization }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
   const task = agent.agent_config.tasks.find(
@@ -52,7 +53,7 @@ const VoiceSection = ({ agent }: Props) => {
     resolver: zodResolver(voiceSchema),
     defaultValues: {
       provider: synthesizer?.provider || "",
-      model: provider?.model || "",
+      model: provider?.voice_id || provider?.model || "",
       bufferSize: synthesizer?.buffer_size || 150,
       endpointing: transcriber?.endpointing || 700,
       incrementalDelay: taskConfig?.incremental_delay || 1200,
@@ -64,13 +65,21 @@ const VoiceSection = ({ agent }: Props) => {
     },
   });
 
-  const selectedProvider = PROVIDERS.find(
-    (provider) =>
-      provider.key === form.watch("provider") &&
-      provider.category === "synthesizer"
+  // Get unique providers from organization voices
+  const providers = Array.from(
+    new Set(organization?.voices?.map((voice) => voice.provider))
+  );
+
+  // Get models based on selected provider
+  const selectedProvider = form.watch("provider");
+  const models = organization?.voices?.filter(
+    (voice) => voice.provider === selectedProvider
   );
 
   const onSubmit = async (data: VoiceValues) => {
+    const synthProviderConfig = models.find(
+      (voice) => voice.voice_id === data.model
+    );
     try {
       const updatedAgent: CreateAgentPayload = {
         agent_prompts: {
@@ -79,7 +88,10 @@ const VoiceSection = ({ agent }: Props) => {
         agent_config: {
           ...agent.agent_config,
           tasks: agent.agent_config.tasks.map((task) => {
-            if (task.task_type === "conversation" && task.tools_config.synthesizer) {
+            if (
+              task.task_type === "conversation" &&
+              task.tools_config.synthesizer
+            ) {
               return {
                 ...task,
                 tools_config: {
@@ -89,7 +101,7 @@ const VoiceSection = ({ agent }: Props) => {
                     provider: data.provider,
                     provider_config: {
                       ...task.tools_config.synthesizer.provider_config,
-                      model: data.model,
+                      ...synthProviderConfig,
                     },
                     buffer_size: data.bufferSize,
                   },
@@ -117,7 +129,10 @@ const VoiceSection = ({ agent }: Props) => {
         ? updateAgent(agent.agent_id, updatedAgent)
         : createAgent(updatedAgent));
       handleToast({ result, form });
-      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+      if (
+        result.success &&
+        result.data?.assistant_status === AssistantStatus.SEEDING
+      ) {
         router.replace(`/agents/${result.data.agent_id}`);
       }
     } catch (error) {
@@ -139,16 +154,20 @@ const VoiceSection = ({ agent }: Props) => {
             <FormItem>
               <FormLabel>Provider</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("model", ""); // Reset model field
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROVIDERS.filter(
-                      (provider) => provider.category === "synthesizer"
-                    ).map((provider) => (
-                      <SelectItem key={provider.key} value={provider.key}>
-                        {provider.label}
+                    {providers?.map((provider) => (
+                      <SelectItem key={provider} value={provider}>
+                        {provider}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -172,11 +191,15 @@ const VoiceSection = ({ agent }: Props) => {
                     <SelectValue placeholder="Select a Model" />
                   </SelectTrigger>
                   <SelectContent>
-                    {selectedProvider?.models?.map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        {model.label}
-                      </SelectItem>
-                    )) || <SelectItem value="">No models available</SelectItem>}
+                    {models?.length > 0 ? (
+                      models?.map((model) => (
+                        <SelectItem key={model.voice_id} value={model.voice_id}>
+                          {model.name}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="">No models available</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </FormControl>
@@ -298,10 +321,7 @@ const VoiceSection = ({ agent }: Props) => {
                 <FormItem>
                   <FormLabel>User is Online Message</FormLabel>
                   <FormControl>
-                    <Input
-                      {...field}
-                      placeholder="Hey, are you still there?"
-                    />
+                    <Input {...field} placeholder="Hey, are you still there?" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -2,7 +2,11 @@
 
 import { api } from "@/lib/fetchAPI";
 import { createParams, SearchParams } from "@/lib/searchParams";
-import { ListOrganizationsResponse, Organizations } from "./interface";
+import {
+  ActiveOrganizationDetails,
+  ListOrganizationsResponse,
+  Organizations,
+} from "./interface";
 import { revalidatePath } from "next/cache";
 import { OrganizationValues } from "./validation";
 
@@ -49,13 +53,19 @@ export const updateOrganization = async (
   return response;
 };
 
-export const deleteOrganization = async (
-  organizationId: string,
-) => {
+export const deleteOrganization = async (organizationId: string) => {
   const url = `/organizations/${organizationId}`;
   const response = await api.delete<null>(url, {
     bearer: true,
   });
   revalidatePath("/", "layout");
+  return response;
+};
+
+export const getActiveOrganization = async () => {
+  const url = `/organizations/active`;
+  const response = await api.get<ActiveOrganizationDetails>(url, {
+    bearer: true,
+  });
   return response;
 };

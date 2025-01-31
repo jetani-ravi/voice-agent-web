@@ -28,11 +28,14 @@ import {
   AssistantStatus,
   CreateAgentPayload,
 } from "@/app/modules/agents/interface";
-import { PROVIDERS } from "@/constants/providers";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { TranscribersConfig } from "@/app/modules/models-config/interface";
+import { getTranscribers } from "@/app/modules/models-config/action";
+import { LANGUAGES } from "@/constants/providers";
 
 interface Props {
   agent: Agent;
@@ -40,25 +43,60 @@ interface Props {
 
 const TranscriberSection = ({ agent }: Props) => {
   const { handleToast } = useToastHandler();
+  const [transcribers, setTranscribers] = useState<TranscribersConfig[]>([]);
   const router = useRouter();
-  const task = agent.agent_config.tasks.find(task => task.task_type === "conversation")
+  const task = agent.agent_config.tasks.find(
+    (task) => task.task_type === "conversation"
+  );
   const transcriber = task?.tools_config.transcriber;
   const form = useForm<TranscriberValues>({
     resolver: zodResolver(transcriberSchema),
     defaultValues: {
       provider: transcriber?.provider || "",
       model: transcriber?.model || "",
+      language: transcriber?.language || "",
       keywords: transcriber?.keywords || "",
-      interruptionWait:
-        task?.task_config
-          .number_of_words_for_interruption || 0,
+      interruptionWait: task?.task_config.number_of_words_for_interruption || 0,
     },
   });
 
-  const selectedProvider = PROVIDERS.find(
-    (provider) =>
-      provider.key === form.watch("provider") &&
-      provider.category === "transcriber"
+  const fetchTranscribers = async () => {
+    try {
+      const result = await getTranscribers();
+      if (result.success) {
+        setTranscribers(result.data!);
+      }
+    } catch (error) {
+      console.error("Error fetching transcribers: ", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchTranscribers();
+  }, []);
+
+  const providers = Array.from(
+    new Set(transcribers.map((transcriber) => transcriber.provider))
+  );
+
+  const selectedProvider = form.watch("provider");
+  const selectedModel = form.watch("model");
+
+  const models = transcribers.filter(
+    (transcriber) => transcriber.provider === selectedProvider
+  );
+
+  // Get supported languages for the selected model
+  const selectedModelConfig = transcribers.find(
+    (transcriber) => transcriber.canonical_name === selectedModel
+  );
+
+  // Filter LANGUAGES based on the selected model's supported languages
+  const availableLanguages = LANGUAGES.filter(
+    (language) =>
+      language.key !== "all" &&
+      (!selectedModelConfig?.languages || // If no model is selected or model has no language restrictions, show all
+        selectedModelConfig.languages.includes(language.value))
   );
 
   const onSubmit = async (data: TranscriberValues) => {
@@ -70,7 +108,10 @@ const TranscriberSection = ({ agent }: Props) => {
         agent_config: {
           ...agent.agent_config,
           tasks: agent.agent_config.tasks.map((task) => {
-            if (task.task_type === "conversation" && task.tools_config.transcriber) {
+            if (
+              task.task_type === "conversation" &&
+              task.tools_config.transcriber
+            ) {
               return {
                 ...task,
                 tools_config: {
@@ -79,6 +120,7 @@ const TranscriberSection = ({ agent }: Props) => {
                     ...task.tools_config.transcriber,
                     provider: data.provider,
                     model: data.model,
+                    language: data.language,
                     keywords: data.keywords,
                   },
                 },
@@ -96,7 +138,10 @@ const TranscriberSection = ({ agent }: Props) => {
         ? updateAgent(agent.agent_id, updatedAgent)
         : createAgent(updatedAgent));
       handleToast({ result, form });
-      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+      if (
+        result.success &&
+        result.data?.assistant_status === AssistantStatus.SEEDING
+      ) {
         router.replace(`/agents/${result.data.agent_id}`);
       }
     } catch (error) {
@@ -118,16 +163,21 @@ const TranscriberSection = ({ agent }: Props) => {
             <FormItem>
               <FormLabel>Provider</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("model", ""); // Reset model field
+                    form.setValue("language", ""); // Reset language field
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROVIDERS.filter(
-                      (provider) => provider.category === "transcriber"
-                    ).map((provider) => (
-                      <SelectItem key={provider.key} value={provider.key}>
-                        {provider.label}
+                    {providers.map((provider) => (
+                      <SelectItem key={provider} value={provider}>
+                        {provider}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -146,16 +196,54 @@ const TranscriberSection = ({ agent }: Props) => {
             <FormItem>
               <FormLabel>Model</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select
+                  onValueChange={(value) => {
+                    field.onChange(value);
+                    form.setValue("language", ""); // Reset language field when model changes
+                  }}
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Model" />
                   </SelectTrigger>
                   <SelectContent>
-                    {selectedProvider?.models?.map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
-                        {model.label}
+                    {models?.map((model) => (
+                      <SelectItem
+                        key={model.canonical_name}
+                        value={model.canonical_name}
+                      >
+                        {model.canonical_name}
                       </SelectItem>
                     )) || <SelectItem value="">No models available</SelectItem>}
+                  </SelectContent>
+                </Select>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Language</FormLabel>
+              <FormControl>
+                <Select onValueChange={field.onChange} value={field.value}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a Language" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableLanguages.length > 0 ? (
+                      availableLanguages.map((language) => (
+                        <SelectItem key={language.key} value={language.value}>
+                          {language.label}
+                        </SelectItem>
+                      ))
+                    ) : (
+                      <SelectItem value="">No Languages available</SelectItem>
+                    )}
                   </SelectContent>
                 </Select>
               </FormControl>

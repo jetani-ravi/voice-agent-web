@@ -23,15 +23,18 @@ import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { Input } from "@/components/ui/input";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
+import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
 
 interface AgentDetailDrawerProps {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
+  organization: ActiveOrganizationDetails;
 }
 
 export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
   agent,
   knowledgeBases,
+  organization
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -117,6 +120,7 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
               <ConfigurationSection
                 agent={agent}
                 knowledgeBases={knowledgeBases}
+                organization={organization}
               />
 
               {/* Test Section */}
