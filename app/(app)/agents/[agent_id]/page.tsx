@@ -82,8 +82,6 @@ const AgentDetail = async ({
     );
   }
 
-  console.log("organization in page: ", organization)
-
   return (
     <ScreenContainer>
       <Header breadcrumbs={breadcrumbs} />
