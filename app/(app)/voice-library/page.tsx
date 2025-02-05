@@ -34,3 +34,5 @@ const VoiceLibraryPage = async (props: {
 };
 
 export default VoiceLibraryPage;
+
+export const dynamic = 'force-dynamic'

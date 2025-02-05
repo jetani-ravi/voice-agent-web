@@ -25,8 +25,8 @@ const TestLLMSection = ({ agent }: Props) => {
     if (result.success) {
       setPhoneNumbers(
         result.data?.phone_numbers.map((phoneNumber) => ({
-          value: phoneNumber.phoneNumber,
-          label: phoneNumber.phoneNumber,
+          value: phoneNumber.phone_number,
+          label: phoneNumber.phone_number,
         })) || []
       );
       return;

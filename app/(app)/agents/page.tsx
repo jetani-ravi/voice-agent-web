@@ -30,3 +30,5 @@ const AgentsPage = async (props: { searchParams: Promise<SearchParams> }) => {
 };
 
 export default AgentsPage;
+
+export const dynamic = 'force-dynamic'

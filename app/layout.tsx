@@ -1,3 +1,4 @@
+import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -5,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import AuthProvider from "@/components/auth-provider";
 import { auth } from "@/auth";
 import { ThemeProvider } from "@/components/theme-provider";
+const NextProgress = dynamic(() => import("@/components/next-progress"));
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -49,6 +51,7 @@ export default async function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
+            <NextProgress />
             {children}
             <Toaster />
           </ThemeProvider>

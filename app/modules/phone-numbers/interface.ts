@@ -31,7 +31,6 @@ export interface PhoneNumber {
   location?: string;
   twilio_sid?: string;
   agent_id?: string;
-  user_id: string;
   capabilities?: PhoneNumberCapabilities;
   properties?: PhoneNumberProperties;
   purchased?: boolean;

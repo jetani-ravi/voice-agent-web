@@ -27,3 +27,5 @@ const ApiKeysPage = async (props: { searchParams: Promise<SearchParams> }) => {
 };
 
 export default ApiKeysPage;
+
+export const dynamic = 'force-dynamic'

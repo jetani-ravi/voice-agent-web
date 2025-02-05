@@ -33,3 +33,5 @@ const PhoneNumbersPage = async (props: { searchParams: Promise<SearchParams> }) 
 };
 
 export default PhoneNumbersPage;
+
+export const dynamic = 'force-dynamic'

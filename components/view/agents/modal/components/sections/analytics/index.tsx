@@ -95,7 +95,7 @@ const PostCallAnalytics = ({ agent }: Props) => {
           task_type: "extraction",
           tools_config: {
             llm_agent: {
-              extraction_details: data.extractCallSummaryPrompt || "",
+              extraction_details: data.extractCallSummaryPrompt || null,
             },
           },
         } as Task); // Dynamically cast as Task

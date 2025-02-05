@@ -3,11 +3,13 @@
 import { syncPhoneNumbers } from "@/app/modules/phone-numbers/action";
 import { Button } from "@/components/ui/button";
 import PhoneNumberForm from "@/components/view/phone-numbers/components/phone-number-form";
+import { useToastHandler } from "@/hooks/use-toast-handler";
 import { RefreshCcw } from "lucide-react";
 import { useState } from "react";
 
 export function CreatePhoneNumberButton() {
   const [open, setOpen] = useState(false);
+  const { handleToast } = useToastHandler();
   const [isSyncing, setIsSyncing] = useState(false);
   const handleClick = () => {
     setOpen(true);
@@ -16,7 +18,8 @@ export function CreatePhoneNumberButton() {
   const handleSync = async () => {
     try {
       setIsSyncing(true);
-      await syncPhoneNumbers();
+      const result = await syncPhoneNumbers();
+      handleToast({ result });
     } catch (error) {
       console.error(error);
     } finally {

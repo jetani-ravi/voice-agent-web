@@ -33,3 +33,5 @@ const KnowledgeBasePage = async (props: { searchParams: Promise<SearchParams> })
 };
 
 export default KnowledgeBasePage;
+
+export const dynamic = 'force-dynamic'

@@ -28,3 +28,5 @@ const ProvidersPage = async (props: {
 };
 
 export default ProvidersPage;
+
+export const dynamic = 'force-dynamic'

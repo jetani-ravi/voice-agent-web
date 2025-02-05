@@ -97,3 +97,5 @@ const AgentDetail = async ({
 };
 
 export default AgentDetail;
+
+export const dynamic = 'force-dynamic'
