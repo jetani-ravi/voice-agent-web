@@ -101,7 +101,7 @@ const KnowledgeBaseForm = ({ open, setOpen, knowledgeBase }: Props) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent>
+      <DialogContent className="overflow-y-auto max-h-screen">
         <DialogHeader>
           <DialogTitle>
             {knowledgeBase ? "Edit" : "Create"} Knowledge Base

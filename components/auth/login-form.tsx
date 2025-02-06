@@ -1,15 +1,15 @@
 "use client";
 
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { cn } from "@/lib/utils";
 import { loginSchema, type LoginValues } from "@/app/modules/user/validation";
-import { login } from "@/app/modules/user/action";
+import { googleAuth, login } from "@/app/modules/user/action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -35,8 +35,11 @@ export function LoginForm({
   ...props
 }: React.ComponentPropsWithoutRef<"div">) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/";
   const { handleToast } = useToastHandler();
   const [isPending, startTransition] = useTransition();
+  const [loggingInGoogle, setLoggingInGoogle] = useState(false);
 
   const form = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -58,12 +61,23 @@ export function LoginForm({
 
         handleToast({ result, successMessage: "Login successful!" });
         if (result.success) {
-          router.push("/");
+          router.replace(callbackUrl);
         }
       } catch (error) {
         console.error("Something went wrong. Please try again.", error);
       }
     });
+  };
+
+  const onGoogleLogin = async () => {
+    setLoggingInGoogle(true);
+    try {
+      await googleAuth(callbackUrl);
+    } catch (error) {
+      console.error("Something went wrong. Please try again.", error);
+    } finally {
+      setLoggingInGoogle(false);
+    }
   };
 
   return (
@@ -91,7 +105,11 @@ export function LoginForm({
                 </svg>
                 Login with Apple
               </Button>
-              <Button variant="outline" className="w-full">
+              <Button
+                variant="outline"
+                className="w-full"
+                onClick={onGoogleLogin}
+              >
                 <svg
                   className="mr-2 h-4 w-4"
                   xmlns="http://www.w3.org/2000/svg"
@@ -103,6 +121,7 @@ export function LoginForm({
                   />
                 </svg>
                 Login with Google
+                {loggingInGoogle && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               </Button>
             </div>
             <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">

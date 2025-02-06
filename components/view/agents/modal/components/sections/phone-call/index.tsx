@@ -1,6 +1,7 @@
 import { Agent } from "@/app/modules/agents/interface";
 import { initiateCall } from "@/app/modules/phone-numbers/action";
 import { InitiateCall } from "@/app/modules/phone-numbers/interface";
+import { me } from "@/app/modules/user/action";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -22,7 +23,8 @@ import { PhoneInput } from "@/components/ui/phone-input";
 import { Option, SearchableSelect } from "@/components/ui/searchable-select";
 import { useToast } from "@/hooks/use-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
-import React from "react";
+import { Loader2 } from "lucide-react";
+import React, { useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -51,6 +53,7 @@ const PhoneCallModal = ({
   phoneNumbers,
 }: PhoneCallModalProps) => {
   const { toast } = useToast();
+  const [isPending, startTransition] = useTransition();
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -60,19 +63,25 @@ const PhoneCallModal = ({
     },
   });
 
-  const onSubmit = async (data: FormSchema) => {
-    if (!agent?.agent_id) return;
-    const payload: InitiateCall = {
-      recipient_phone_number: data.recipient_phone_number,
-      agent_id: agent?.agent_id,
-      from_phone_number: data.from_phone_number,
-    };
-    await initiateCall(payload);
-    toast({
-      title: "Call initiated",
-      description: "Call has been initiated to the recipient",
+  const onSubmit = (data: FormSchema) => {
+    startTransition(async () => {
+      if (!agent?.agent_id) return;
+      const payload: InitiateCall = {
+        recipient_phone_number: data.recipient_phone_number,
+        agent_id: agent?.agent_id,
+        from_phone_number: data.from_phone_number,
+      };
+      const result = await me();
+      if (result.success) {
+        const user = result.data!;
+        await initiateCall(payload, user._id, user.active_organization._id);
+        toast({
+          title: "Call initiated",
+          description: "Call has been initiated to the recipient",
+        });
+        handleToggle();
+      }
     });
-    handleToggle();
   };
 
   const handleToggle = () => {
@@ -127,7 +136,10 @@ const PhoneCallModal = ({
               <Button variant="outline" type="button" onClick={handleToggle}>
                 Cancel
               </Button>
-              <Button type="submit">Place Call</Button>
+              <Button type="submit" disabled={isPending}>
+                Place Call
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              </Button>
             </DialogFooter>
           </form>
         </Form>

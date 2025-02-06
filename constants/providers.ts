@@ -34,6 +34,18 @@ export const PROVIDERS = [
     ],
   },
   {
+    category: "llm",
+    key: "deepinfra",
+    label: "DeepInfra",
+    models: [
+      {
+        key: "deepinfra/meta-llama/Meta-Llama-3.1-405B-Instruct",
+        label: "Meta Llama 3.1 405B Instruct",
+        family: "llama",
+      },
+    ],
+  },
+  {
     category: "transcriber",
     key: "whisper",
     label: "Whisper",

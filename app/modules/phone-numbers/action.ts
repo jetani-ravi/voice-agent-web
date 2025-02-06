@@ -16,8 +16,14 @@ import {
 } from "./validation";
 import { revalidatePath } from "next/cache";
 
-export const initiateCall = async (payload: InitiateCall) => {
-  const url = `${process.env.TELEPHONY_API_URL}/call`;
+export const initiateCall = async (
+  payload: InitiateCall,
+  user_id: string,
+  org_id: string
+) => {
+  const baseUrl = `${process.env.TELEPHONY_API_URL}/call`;
+  const queryParams = new URLSearchParams({ user_id, org_id });
+  const url = `${baseUrl}?${queryParams.toString()}`;
   const cookieStore = await cookies();
   let token;
   if (process.env.NODE_ENV === "production") {

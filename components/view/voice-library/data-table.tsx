@@ -10,6 +10,11 @@ import { GENDERS, LANGUAGES, VOICE_PROVIDERS } from "@/constants/providers";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import {
+  addVoiceToOrganization,
+  removeVoiceFromOrganization,
+} from "@/app/modules/voice-library/action";
+import { useToastHandler } from "@/hooks/use-toast-handler";
 
 interface DataTableProps {
   voices: Voice[];
@@ -20,6 +25,8 @@ const DataTable = ({ voices, pagination }: DataTableProps) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+
+  const { handleToast } = useToastHandler();
 
   // State management
   const [playingAudio, setPlayingAudio] = useState<string | null>(null);
@@ -103,7 +110,22 @@ const DataTable = ({ voices, pagination }: DataTableProps) => {
 
   // Add voice handler
   const handleAdd = async (voice: Voice) => {
-    console.log("Added voice: ", voice);
+    try {
+      const result = await addVoiceToOrganization(voice._id);
+      handleToast({ result });
+    } catch (error) {
+      console.error("Error adding voice: ", error);
+    }
+  };
+
+  // Remove voice handler
+  const handleRemove = async (voice: Voice) => {
+    try {
+      const result = await removeVoiceFromOrganization(voice._id);
+      handleToast({ result });
+    } catch (error) {
+      console.error("Error removing voice: ", error);
+    }
   };
 
   // Cleanup audio on unmount
@@ -158,6 +180,7 @@ const DataTable = ({ voices, pagination }: DataTableProps) => {
       playingAudio={playingAudio}
       handlePlayAudio={handlePlayAudio}
       onAdd={handleAdd}
+      onRemove={handleRemove}
     />
   );
 

@@ -34,6 +34,7 @@ export const llmSchema = z.object({
 export const transcriberSchema = z.object({
   provider: z.string().nonempty("Provider is required"),
   model: z.string().nonempty("Model is required"),
+  language: z.string().nonempty("Language is required"),
   keywords: z.string().optional(),
   interruptionWait: z.number().min(1).max(10),
 });

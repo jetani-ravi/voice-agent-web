@@ -1,6 +1,6 @@
 "use server";
 import { ApiResponse } from "@/types/api";
-import { AuthResponse } from "./interface";
+import { AuthResponse, User } from "./interface";
 import { loginSchema, signUpSchema } from "./validation";
 import { signIn } from "@/auth";
 import { AuthError } from "next-auth";
@@ -42,29 +42,46 @@ export async function signUp(
 }
 
 export async function login(
-  formData: FormData
+  formData: FormData,
 ): Promise<ApiResponse<AuthResponse>> {
   try {
-    const parsed = loginSchema.safeParse({
-      email: formData.get("email"),
-      password: formData.get("password"),
-    });
+  const parsed = loginSchema.safeParse({
+    email: formData.get("email"),
+    password: formData.get("password"),
+  });
 
-    if (!parsed.success) {
-      return { success: false, error: parsed.error };
-    }
+  if (!parsed.success) {
+    return { success: false, error: parsed.error };
+  }
 
-    await signIn("credentials", {
-      ...parsed.data,
-      redirect: false,
-    });
+  await signIn("credentials", {
+    ...parsed.data,
+    redirect: false,
+  });
 
-    return { success: true };
+  return { success: true };
   } catch (error) {
     if (error instanceof AuthError) {
       return { success: false, error: "Invalid credentials" };
     }
+    console.error("Error: ", error)
 
     return { success: false, error: "Something went wrong" };
   }
 }
+
+export async function googleAuth(
+  redirect: string
+): Promise<ApiResponse<null>> {
+  await signIn("google", {
+    redirectTo: redirect,
+  });
+
+  return { success: true };
+}
+
+export const me = async () => {
+  const url = `/user/me`;
+  const response = await api.get<User>(url, { bearer: true });
+  return response;
+};

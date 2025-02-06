@@ -1,7 +1,7 @@
 import React from "react";
 import { Voice } from "@/app/modules/voice-library/interface";
 import { Button } from "@/components/ui/button";
-import { PlayCircle, PauseCircle, Plus } from "lucide-react";
+import { PlayCircle, PauseCircle, Plus, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
 interface VoiceCardProps {
@@ -9,6 +9,7 @@ interface VoiceCardProps {
   playingAudio: string | null;
   handlePlayAudio: (previewUrl: string | undefined, voiceId: string) => void;
   onAdd?: (voice: Voice) => void;
+  onRemove?: (voice: Voice) => void;
 }
 
 const VoiceCard = ({
@@ -16,6 +17,7 @@ const VoiceCard = ({
   playingAudio,
   handlePlayAudio,
   onAdd,
+  onRemove,
 }: VoiceCardProps) => {
   return (
     <div className="space-y-3">
@@ -27,8 +29,8 @@ const VoiceCard = ({
         <div className="flex gap-2">
           {voice.preview_url && (
             <Button
-              variant="ghost"
-              size="icon"
+              variant="outline"
+              // size="icon"
               title="Play/Pause Audio"
               onClick={(e) => {
                 e.stopPropagation();
@@ -36,25 +38,47 @@ const VoiceCard = ({
               }}
             >
               {playingAudio === voice.voice_id ? (
-                <PauseCircle className="h-6 w-6" />
+                <>
+                  <PauseCircle className="h-6 w-6" />
+                  Pause
+                </>
               ) : (
-                <PlayCircle className="h-6 w-6" />
+                <>
+                  <PlayCircle className="h-6 w-6" />
+                  Play
+                </>
               )}
             </Button>
           )}
-          <Button
-            variant="outline"
-            size="icon"
-            title="Add voice"
-            onClick={(e) => {
-              e.stopPropagation();
-              if (onAdd) {
-                onAdd(voice);
-              }
-            }}
-          >
-            <Plus className="h-4 w-4" />
-          </Button>
+          {voice.is_added ? (
+            <Button
+              variant="outline"
+              size="icon"
+              title="Remove voice"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onRemove) {
+                  onRemove(voice);
+                }
+              }}
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="outline"
+              size="icon"
+              title="Add voice"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onAdd) {
+                  onAdd(voice);
+                }
+              }}
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
 

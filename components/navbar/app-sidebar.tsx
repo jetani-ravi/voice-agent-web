@@ -3,11 +3,8 @@
 import * as React from "react";
 import {
   AudioLines,
-  AudioWaveform,
   BookOpen,
   Bot,
-  Command,
-  GalleryVerticalEnd,
   KeyRound,
   Package,
   Phone,
@@ -16,7 +13,7 @@ import {
 
 import { NavMain } from "@/components/navbar/nav-main";
 import { NavUser } from "@/components/navbar/nav-user";
-import { TeamSwitcher } from "@/components/navbar/team-switcher";
+import { OrganizationSwitcher } from "@/components/navbar/org-switcher";
 import {
   Sidebar,
   SidebarContent,
@@ -24,31 +21,10 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { User } from "@/app/modules/user/interface";
 
 // This is sample data.
 const data = {
-  user: {
-    name: "Voice Agent",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
-  teams: [
-    {
-      name: "Voice Agent",
-      logo: GalleryVerticalEnd,
-      plan: "Enterprise",
-    },
-    {
-      name: "Acme Corp.",
-      logo: AudioWaveform,
-      plan: "Startup",
-    },
-    {
-      name: "Evil Corp.",
-      logo: Command,
-      plan: "Free",
-    },
-  ],
   navMain: [
     {
       title: "Agents",
@@ -104,20 +80,22 @@ const data = {
         },
       ],
     },
-  ]
+  ],
 };
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user: User }) {
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
-        <TeamSwitcher teams={data.teams} />
+        <OrganizationSwitcher user={props.user} />
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={props.user} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

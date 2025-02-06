@@ -21,13 +21,19 @@ import VoiceSection from "./sections/voice";
 import CallSection from "./sections/call";
 import FunctionsSection from "./sections/functions";
 import PostCallAnalytics from "./sections/analytics";
+import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
 
 interface Props {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
+  organization: ActiveOrganizationDetails;
 }
 
-const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
+const ConfigurationSection = ({
+  agent,
+  knowledgeBases,
+  organization,
+}: Props) => {
   return (
     <div className="flex-1 px-6 py-4 bg-card overflow-y-auto rounded-lg">
       <Accordion type="single" collapsible className="w-full">
@@ -63,7 +69,7 @@ const ConfigurationSection = ({ agent, knowledgeBases }: Props) => {
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <VoiceSection agent={agent} />
+            <VoiceSection agent={agent} organization={organization} />
           </AccordionContent>
         </AccordionItem>
 
