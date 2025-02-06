@@ -6,12 +6,12 @@ export interface ApiKey {
     value: string;
     display_value: string;
     active: boolean;
-    last_accessed_at?: Date | null;
+    last_accessed_at?: string | null;
     org_id: string;
     user_id: string;
-    created_at: Date;
-    expires_at?: Date | null;
-    deleted_at?: Date | null;
+    created_at: string;
+    expires_at?: string | null;
+    deleted_at?: string | null;
   }
 
   export type ListApiKeysResponse = {
