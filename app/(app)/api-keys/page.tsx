@@ -1,6 +1,9 @@
 import { Header } from "@/components/header/header";
 import { ScreenContainer, ScreenContent } from "@/components/screen-container";
 import { createSearchParams, SearchParams } from "@/lib/searchParams";
+import { CreateApiKeyButton } from "./create-button";
+import { getApiKeys } from "@/app/modules/api-keys/action";
+import DataTable from "@/components/view/api-keys/data-table";
 
 const breadcrumbs = [
   {
@@ -13,14 +16,13 @@ const ApiKeysPage = async (props: { searchParams: Promise<SearchParams> }) => {
   const searchParams = await props.searchParams;
   const params: SearchParams = createSearchParams(searchParams);
 
-  console.log(params);
+  const response = await getApiKeys(params);
+  const { api_keys, pagination } = response.data!;
   return (
     <ScreenContainer>
-      <Header
-        breadcrumbs={breadcrumbs}
-      />
+      <Header breadcrumbs={breadcrumbs} rightContent={<CreateApiKeyButton />} />
       <ScreenContent>
-        <div>API Keys</div>
+        <DataTable apiKeys={api_keys} pagination={pagination} />
       </ScreenContent>
     </ScreenContainer>
   );
@@ -28,4 +30,4 @@ const ApiKeysPage = async (props: { searchParams: Promise<SearchParams> }) => {
 
 export default ApiKeysPage;
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
