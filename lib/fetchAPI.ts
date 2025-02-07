@@ -38,6 +38,9 @@ const requestInterceptor = async (
     try {
       const headersList = await nextHeaders();
       console.log("headersList: ", headersList);
+      for (const [key, value] of headersList.entries()) {
+        console.log(`${key}: ${value}`);
+      }
       const cookie = headersList.get("cookie");
       console.log("cookie: ", cookie);
       const token = await getToken({
