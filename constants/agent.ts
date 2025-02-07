@@ -1,7 +1,11 @@
 import { CreateAgentPayload } from "@/app/modules/agents/interface";
 
-export const generateToolName = () => {
-  return `tool_${Math.random().toString(36).substring(2, 15)}`;
+export const generateToolName = (prefix?: string) => {
+  const randomPart = Math.random().toString(36).substring(2, 15);
+  if (prefix) {
+    return `${prefix}_${randomPart}`;
+  }
+  return `tool_${randomPart}`;
 };
 
 // constants.ts
@@ -236,7 +240,7 @@ export const EXTRACTON_TASK = {
 
 export const DEFAULT_AGENT: CreateAgentPayload = {
   agent_config: {
-    agent_welcome_message: "Hello, how can I help you today?",
+    agent_welcome_message: "Hello from Voice Agent",
     agent_name: "New Agent",
     agent_type: "conversation",
     tasks: [

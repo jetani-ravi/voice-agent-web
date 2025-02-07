@@ -129,7 +129,7 @@ const CalendarAvailabilityDialog = ({
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const toolName = editState?.isEditing ? editState.toolName : generateToolName();
+    const toolName = editState?.isEditing ? editState.toolName : generateToolName("check_availability_of_slots");
 
     const newTool: ToolDescription = {
       name: toolName,

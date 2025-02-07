@@ -74,7 +74,7 @@ const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const toolName = editState?.isEditing
       ? editState.toolName
-      : generateToolName();
+      : generateToolName("transfer_call");
 
     const newTool: ToolDescription = {
       name: toolName,
@@ -86,7 +86,7 @@ const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
     const newToolParams: APIParams = {
       method: API_TOOLS.TRANSFER_CALL.method,
       param: JSON.stringify({
-        callTransferNumber: values.callTransferNumber,
+        call_transfer_number: values.callTransferNumber,
         call_sid: "%(call_sid)s",
       }),
       api_token: undefined,

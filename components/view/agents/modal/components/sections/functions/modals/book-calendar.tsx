@@ -129,7 +129,7 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const toolName = editState?.isEditing
       ? editState.toolName
-      : generateToolName();
+      : generateToolName("book_appointment");
 
     const newTool: ToolDescription = {
       name: toolName,
