@@ -22,7 +22,7 @@ module.exports = {
       staging: {
         user: 'ubuntu',
         host: '98.80.59.215',
-        ref: 'origin/stage',
+        ref: 'origin/main',
         repo: 'git@github.com:mubashshir-cloudmate/voice-agent-web.git',
         path: '/home/ubuntu/workspace/voice-agent-portal',
         'post-deploy':
