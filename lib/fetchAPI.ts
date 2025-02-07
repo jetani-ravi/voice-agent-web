@@ -37,7 +37,6 @@ const requestInterceptor = async (
   if (options.requiresAuth || options.bearer) {
     try {
       const headersList = await nextHeaders();
-      console.log("headersList: ", headersList);
       for (const [key, value] of headersList.entries()) {
         console.log(`${key}: ${value}`);
       }
