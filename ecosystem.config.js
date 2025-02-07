@@ -26,7 +26,7 @@ module.exports = {
         repo: 'git@github.com:mubashshir-cloudmate/voice-agent-web.git',
         path: '/home/ubuntu/workspace/voice-agent-portal',
         'post-deploy':
-          '/home/ubuntu/.nvm/versions/node/v22.12.0/bin/pnpm i && /home/ubuntu/.nvm/versions/node/v22.12.0/bin/pnpm build && /home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2 reload ecosystem.config.js --env staging'
+          'nvm use && /home/ubuntu/.nvm/versions/node/v22.12.0/bin/pnpm i && /home/ubuntu/.nvm/versions/node/v22.12.0/bin/pnpm build && /home/ubuntu/.nvm/versions/node/v22.12.0/bin/pm2 reload ecosystem.config.js --env staging'
       }
     }
   }
