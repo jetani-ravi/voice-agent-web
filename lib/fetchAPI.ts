@@ -48,6 +48,7 @@ const requestInterceptor = async (
           cookies: cookie,
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
         } as any,
+        secureCookie: process.env.NODE_ENV === "production" ? true : false,
         secret: process.env.NEXTAUTH_SECRET,
         raw: true,
       });
@@ -122,19 +123,19 @@ export const api = {
   post: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
     fetchWrapper<T>(endpoint, "POST", {
       ...options,
-      body: options?.formData ? body as BodyInit : JSON.stringify(body),
+      body: options?.formData ? (body as BodyInit) : JSON.stringify(body),
     }),
 
   put: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
     fetchWrapper<T>(endpoint, "PUT", {
       ...options,
-      body: options?.formData ? body as BodyInit : JSON.stringify(body),
+      body: options?.formData ? (body as BodyInit) : JSON.stringify(body),
     }),
 
   patch: <T>(endpoint: string, body: unknown, options?: FetchOptions) =>
     fetchWrapper<T>(endpoint, "PATCH", {
       ...options,
-      body: options?.formData ? body as BodyInit : JSON.stringify(body),
+      body: options?.formData ? (body as BodyInit) : JSON.stringify(body),
     }),
 
   delete: <T>(endpoint: string, options?: FetchOptions) =>
