@@ -78,6 +78,9 @@ async function fetchWrapper<T>(
   options: FetchOptions = {}
 ): Promise<ApiResponse<T>> {
   try {
+    console.log("endpoint: ", endpoint);
+    console.log("method: ", method);
+    console.log("options: ", options);
     // Add query params if they exist
     const url = new URL(`${BASE_URL}${endpoint}`);
     if (options.params) {

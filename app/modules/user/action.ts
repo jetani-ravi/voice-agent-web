@@ -82,6 +82,7 @@ export async function googleAuth(
 
 export const me = async () => {
   const url = `/user/me`;
+  console.log("url: ", url);
   const response = await api.get<User>(url, { bearer: true });
   return response;
 };
