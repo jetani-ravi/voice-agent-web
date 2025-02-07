@@ -9,7 +9,7 @@
 module.exports = {
     apps: [
       {
-        name: 'porta-voice-agents-stage',
+        name: 'portal-voice-agent-stage',
         script: 'npm',
         args: 'start',
         env: {
