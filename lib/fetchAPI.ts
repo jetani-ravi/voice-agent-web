@@ -37,11 +37,7 @@ const requestInterceptor = async (
   if (options.requiresAuth || options.bearer) {
     try {
       const headersList = await nextHeaders();
-      for (const [key, value] of headersList.entries()) {
-        console.log(`${key}: ${value}`);
-      }
       const cookie = headersList.get("cookie");
-      console.log("cookie: ", cookie);
       const token = await getToken({
         req: {
           headers: Object.fromEntries(headersList.entries()),
@@ -52,8 +48,6 @@ const requestInterceptor = async (
         secret: process.env.NEXTAUTH_SECRET,
         raw: true,
       });
-
-      console.log("token: ", token);
 
       if (token) {
         if (token) {
@@ -81,9 +75,6 @@ async function fetchWrapper<T>(
   options: FetchOptions = {}
 ): Promise<ApiResponse<T>> {
   try {
-    console.log("endpoint: ", endpoint);
-    console.log("method: ", method);
-    console.log("options: ", options);
     // Add query params if they exist
     const url = new URL(`${BASE_URL}${endpoint}`);
     if (options.params) {
@@ -91,11 +82,9 @@ async function fetchWrapper<T>(
         url.searchParams.append(key, value);
       });
     }
-    console.log("options.params: ", options.params);
 
     // Apply request interceptor
     const interceptedOptions = await requestInterceptor(options);
-    console.log("interceptedOptions: ", interceptedOptions);
     // Make the request
     const response = await fetch(url.toString(), {
       ...interceptedOptions,
