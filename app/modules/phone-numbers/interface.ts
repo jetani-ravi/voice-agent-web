@@ -41,7 +41,7 @@ export interface PhoneNumber {
 }
 
 export type AvailablePhoneNumbers = {
-  phoneNumber: string;
+  phone_number: string;
   location: string;
   capabilities: {
     voice: boolean;

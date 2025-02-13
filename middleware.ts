@@ -1,5 +1,4 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { auth } from "./auth";
 import { publicRoutes } from "./auth.config";
 
@@ -11,11 +10,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  const baseUrl = process.env.NEXTAUTH_URL || request.url;
+
   // For all other routes, check authentication
   const session = await auth();
   if (!session) {
-    const signInUrl = new URL("/login", request.url);
-    signInUrl.searchParams.set("callbackUrl", request.url);
+    const signInUrl = new URL("/login", baseUrl);
+    signInUrl.searchParams.set("callbackUrl", pathname);
     return NextResponse.redirect(signInUrl);
   }
 
@@ -23,5 +24,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico).*)", "/api-keys"],
 };

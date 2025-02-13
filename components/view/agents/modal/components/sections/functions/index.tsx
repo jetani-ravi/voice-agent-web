@@ -174,7 +174,7 @@ const FunctionsSection = ({ agent }: Props) => {
           toolName,
           defaultValues: {
             description: tool.description,
-            callTransferNumber: params.callTransferNumber,
+            callTransferNumber: params.call_transfer_number,
           },
         });
       } catch (error) {

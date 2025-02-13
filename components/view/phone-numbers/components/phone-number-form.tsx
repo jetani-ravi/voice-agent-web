@@ -107,7 +107,7 @@ const PhoneNumberForm = ({ open, setOpen }: Props) => {
 
   const onSelectPhoneNumber = (phoneNumber: string) => {
     const phoneNumberData = phoneNumbers.find(
-      (number) => number.phoneNumber === phoneNumber
+      (number) => number.phone_number === phoneNumber
     );
     const payload: BuyPhoneNumber = {
       phone_number: phoneNumber,
@@ -217,8 +217,8 @@ const PhoneNumberForm = ({ open, setOpen }: Props) => {
               <SearchableSelect
                 options={
                   phoneNumbers?.map((number) => ({
-                    value: number.phoneNumber,
-                    label: `${number.phoneNumber} - ${number.location}`,
+                    value: number.phone_number,
+                    label: `${number.phone_number} - ${number.location}`,
                   })) || []
                 }
                 placeholder={
