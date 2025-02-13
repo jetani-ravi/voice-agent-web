@@ -67,7 +67,7 @@ const PromptsSection = ({ agent }: Props) => {
   };
 
   return (
-    <div className="w-2/5 p-6 bg-card rounded-lg">
+    <div className="w-2/5 p-6 bg-card rounded-lg overflow-y-auto">
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div>
