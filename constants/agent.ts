@@ -91,26 +91,26 @@ export const API_TOOLS = {
     },
   },
   CUSTOM_FUNCTION: {
-    name: "test",
-    description: "This is a test description",
+    name: "custom_check_slots",
+    description: "Fetch the available free slots of appointment booking before booking the appointment.",
     parameters: {
       type: "object",
       properties: {
         startTime: {
           type: "string",
-          description: "",
+          description: "It is an ISO FORMATTED DATE on which time user is available (convert it automatically to hr:min such as 3:30 PM is 15:30)",
         },
         endTime: {
           type: "string",
-          description: "",
+          description: "It is an ISO FORMATTED DATE. endDate is always 30 minutes more than startDate always i.e. increment one day to the startDate. such if startDate is 2024-05-15T16:30:00.000 then endDate is 2024-05-15T16:45:00.000",
         },
       },
       required: ["startTime", "endTime"],
     },
-    key: "custom_function",
+    key: "custom_function_1",
     value: {
       method: "GET",
-      param: "{}",
+      param: '{"eventTypeId":"1474110","startTime":"%(startTime)s","endTime":"%(endTime)s","timeZone":"Asia/Kolkata"}',
       url: "",
       api_token: "",
     },

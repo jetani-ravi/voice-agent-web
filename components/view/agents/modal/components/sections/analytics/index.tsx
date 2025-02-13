@@ -27,6 +27,7 @@ import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { useRouter } from "next/navigation";
+import { Textarea } from "@/components/ui/textarea";
 
 interface Props {
   agent: Agent;
@@ -75,7 +76,6 @@ const PostCallAnalytics = ({ agent }: Props) => {
               tools_config: {
                 ...task.tools_config,
                 llm_agent: {
-                  ...task.tools_config.llm_agent,
                   extraction_details: data.extractCallSummaryPrompt,
                 },
               },
@@ -95,7 +95,9 @@ const PostCallAnalytics = ({ agent }: Props) => {
           task_type: "extraction",
           tools_config: {
             llm_agent: {
-              ...(data.extractCallSummaryPrompt && { extraction_details: data.extractCallSummaryPrompt }),
+              ...(data.extractCallSummaryPrompt && {
+                extraction_details: data.extractCallSummaryPrompt,
+              }),
             },
           },
         } as Task); // Dynamically cast as Task
@@ -187,7 +189,11 @@ const PostCallAnalytics = ({ agent }: Props) => {
                 <FormItem>
                   <FormLabel>Prompt</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Textarea
+                      {...field}
+                      rows={5}
+                      placeholder={`user_name : Yield the name of the user. \n\npayment_mode : If user is paying by cash, yield cash. If they are paying by card yield card. Else yield NA`}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -58,8 +58,7 @@ const FunctionsSection = ({ agent }: Props) => {
       );
       setApiToolsConfig({
         tools: task?.tools_config?.api_tools?.tools,
-        tools_params:
-          task?.tools_config?.api_tools?.tools_params || {},
+        tools_params: task?.tools_config?.api_tools?.tools_params || {},
       });
     }
   }, [agent]);
@@ -213,6 +212,7 @@ const FunctionsSection = ({ agent }: Props) => {
       agent_prompts: {
         ...agent.agent_prompts,
       },
+
       agent_config: {
         ...agent.agent_config,
         tasks: agent.agent_config.tasks.map((task) => {
@@ -221,11 +221,14 @@ const FunctionsSection = ({ agent }: Props) => {
               ...task,
               tools_config: {
                 ...task.tools_config,
-                api_tools: {
-                  ...task.tools_config.api_tools,
-                  tools: apiToolsConfig.tools,
-                  tools_params: apiToolsConfig.tools_params,
-                },
+                api_tools:
+                  apiToolsConfig.tools && apiToolsConfig.tools?.length > 0
+                    ? {
+                        ...task.tools_config.api_tools,
+                        tools: apiToolsConfig.tools,
+                        tools_params: apiToolsConfig.tools_params,
+                      }
+                    : undefined,
               },
             };
           }
@@ -233,6 +236,7 @@ const FunctionsSection = ({ agent }: Props) => {
         }),
       },
     };
+
     try {
       const result = await (agent.agent_id
         ? updateAgent(agent.agent_id, updatePayload)
@@ -240,7 +244,10 @@ const FunctionsSection = ({ agent }: Props) => {
       handleToast({
         result,
       });
-      if (result.success && result.data?.assistant_status === AssistantStatus.SEEDING) {
+      if (
+        result.success &&
+        result.data?.assistant_status === AssistantStatus.SEEDING
+      ) {
         router.replace(`/agents/${result.data.agent_id}`);
       }
       setEditState(null);
