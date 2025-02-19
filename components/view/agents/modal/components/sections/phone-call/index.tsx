@@ -1,5 +1,9 @@
+import { getAgent } from "@/app/modules/agents/action";
 import { Agent } from "@/app/modules/agents/interface";
-import { initiateCall } from "@/app/modules/phone-numbers/action";
+import {
+  getPhoneNumbers,
+  initiateCall,
+} from "@/app/modules/phone-numbers/action";
 import { InitiateCall } from "@/app/modules/phone-numbers/interface";
 import { me } from "@/app/modules/user/action";
 import { Button } from "@/components/ui/button";
@@ -22,9 +26,10 @@ import {
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Option, SearchableSelect } from "@/components/ui/searchable-select";
 import { useToast } from "@/hooks/use-toast";
+import { useToastHandler } from "@/hooks/use-toast-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import React, { useTransition } from "react";
+import React, { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -32,7 +37,6 @@ interface PhoneCallModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
   agent: Agent;
-  phoneNumbers: Option[];
 }
 
 const formSchema = z.object({
@@ -46,14 +50,58 @@ const formSchema = z.object({
 
 type FormSchema = z.infer<typeof formSchema>;
 
-const PhoneCallModal = ({
-  open,
-  setOpen,
-  agent,
-  phoneNumbers,
-}: PhoneCallModalProps) => {
+const PhoneCallModal = ({ open, setOpen, agent }: PhoneCallModalProps) => {
   const { toast } = useToast();
+  const { handleToast } = useToastHandler();
   const [isPending, startTransition] = useTransition();
+  const [phoneNumbers, setPhoneNumbers] = useState<Option[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const fetchPhoneNumbers = async (provider: string = "twilio") => {
+    const result = await getPhoneNumbers({ provider });
+    if (result.success) {
+      setPhoneNumbers(
+        result.data?.phone_numbers.map((phoneNumber) => ({
+          value: phoneNumber.phone_number,
+          label: phoneNumber.phone_number,
+        })) || []
+      );
+      return;
+    }
+    handleToast({ result });
+  };
+
+  const fetchAgent = async (agentId: string) => {
+    try {
+      const result = await getAgent(agentId);
+      if (result.success) {
+        return result.data;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error fetching agent:", error);
+      return null;
+    }
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const fetchData = async () => {
+      setLoading(true);
+      if (agent?.agent_id) {
+        const agentData = await fetchAgent(agent.agent_id);
+        if (agentData) {
+          const provider = agentData.agent_config.tasks.find(
+            (task) => task.task_type === "conversation"
+          )?.tools_config.input?.provider;
+          await fetchPhoneNumbers(provider);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetchData();
+  }, [open, agent?.agent_id]);
 
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
@@ -122,6 +170,8 @@ const PhoneCallModal = ({
                     <FormLabel>From Phone Number</FormLabel>
                     <FormControl>
                       <SearchableSelect
+                        disabled={loading}
+                        placeholder={loading ? "Fetching phone numbers..." : "Select a phone number"}
                         options={phoneNumbers}
                         defaultValue={field.value}
                         onChange={field.onChange}
