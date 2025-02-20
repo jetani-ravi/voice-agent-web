@@ -1,6 +1,5 @@
 "use server";
 
-import { cookies } from "next/headers";
 import {
   AvailablePhoneNumbers,
   InitiateCall,
@@ -21,31 +20,14 @@ export const initiateCall = async (
   user_id: string,
   org_id: string
 ) => {
-  const baseUrl = `${process.env.TELEPHONY_API_URL}/call`;
   const queryParams = new URLSearchParams({ user_id, org_id });
-  const url = `${baseUrl}?${queryParams.toString()}`;
-  const cookieStore = await cookies();
-  let token;
-  if (process.env.NODE_ENV === "production") {
-    token = cookieStore.get("__Secure-authjs.session-token")?.value;
-  } else {
-    token = cookieStore.get("authjs.session-token")?.value;
-  }
-  const response = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(payload),
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  const url = `/call?${queryParams.toString()}`;
+
+  const response = await api.post(url, payload, {
+    bearer: true,
   });
 
-  if (!response.ok) {
-    throw new Error("Failed to initiate call");
-  }
-
-  const data = await response.text();
-
-  return data;
+  return response;
 };
 
 export const getPhoneNumbers = async (params: SearchParams = {}) => {

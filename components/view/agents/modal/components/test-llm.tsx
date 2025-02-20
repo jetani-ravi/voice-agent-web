@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import PhoneCallModal from "./sections/phone-call";
-import { Option } from "@/components/ui/searchable-select";
-import { getPhoneNumbers } from "@/app/modules/phone-numbers/action";
-import { useToastHandler } from "@/hooks/use-toast-handler";
 import { Agent } from "@/app/modules/agents/interface";
 import LLMChat from "./sections/llm-chat";
 
@@ -14,29 +11,7 @@ interface Props {
 
 const TestLLMSection = ({ agent }: Props) => {
   const [open, setOpen] = useState(false);
-  const [phoneNumbers, setPhoneNumbers] = useState<Option[]>([]);
-  const { handleToast } = useToastHandler();
   const [showChat, setShowChat] = useState(false);
-
-  const fetchPhoneNumbers = async () => {
-    const result = await getPhoneNumbers();
-    if (result.success) {
-      setPhoneNumbers(
-        result.data?.phone_numbers.map((phoneNumber) => ({
-          value: phoneNumber.phone_number,
-          label: phoneNumber.phone_number,
-        })) || []
-      );
-      return;
-    }
-    handleToast({ result });
-  };
-
-  useEffect(() => {
-    if (agent?.agent_id) {
-      fetchPhoneNumbers();
-    }
-  }, [agent?.agent_id]);
 
   const onTestAudio = async () => {
     if (!agent?.agent_id) return;
@@ -62,10 +37,7 @@ const TestLLMSection = ({ agent }: Props) => {
           >
             <div className="text-center space-y-4">
               <h3 className="text-lg font-medium">Test your agent</h3>
-              <Button
-                onClick={onTestAudio}
-                disabled={!agent?.agent_id}
-              >
+              <Button onClick={onTestAudio} disabled={!agent?.agent_id}>
                 Make a Call
               </Button>
             </div>
@@ -96,7 +68,6 @@ const TestLLMSection = ({ agent }: Props) => {
         open={open}
         setOpen={setOpen}
         agent={agent!}
-        phoneNumbers={phoneNumbers}
       />
     </div>
   );

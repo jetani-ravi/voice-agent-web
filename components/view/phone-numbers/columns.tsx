@@ -49,14 +49,25 @@ export const getColumns = ({
     enableHiding: false,
   },
   {
-    id: "properties.friendly_name",
-    accessorKey: "properties.friendly_name",
+    id: "phone_number",
+    accessorKey: "phone_number",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Phone Number" />
     ),
     sortingFn: "text",
     meta: {
       viewKey: "Phone Number",
+    },
+  },
+  {
+    id: "properties.friendly_name",
+    accessorKey: "properties.friendly_name",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Friendly Name" />
+    ),
+    sortingFn: "text",
+    meta: {
+      viewKey: "Friendly Name",
     },
   },
   {
