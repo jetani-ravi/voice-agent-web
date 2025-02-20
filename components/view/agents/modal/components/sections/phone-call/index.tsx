@@ -112,24 +112,28 @@ const PhoneCallModal = ({ open, setOpen, agent }: PhoneCallModalProps) => {
   });
 
   const onSubmit = (data: FormSchema) => {
-    startTransition(async () => {
-      if (!agent?.agent_id) return;
-      const payload: InitiateCall = {
-        recipient_phone_number: data.recipient_phone_number,
-        agent_id: agent?.agent_id,
-        from_phone_number: data.from_phone_number,
-      };
-      const result = await me();
-      if (result.success) {
+    try {
+      startTransition(async () => {
+        if (!agent?.agent_id) return;
+        const payload: InitiateCall = {
+          recipient_phone_number: data.recipient_phone_number,
+          agent_id: agent?.agent_id,
+          from_phone_number: data.from_phone_number,
+        };
+        const result = await me();
         const user = result.data!;
-        await initiateCall(payload, user._id, user.active_organization._id);
-        toast({
-          title: "Call initiated",
-          description: "Call has been initiated to the recipient",
-        });
+        const callResult = await initiateCall(payload, user._id, user.active_organization._id);
+        handleToast({ result: callResult, successMessage: "Call has been initiated to the recipient" });
         handleToggle();
-      }
-    });
+      });
+    } catch (error) {
+      console.error("Error initiating call:", error);
+      toast({
+        title: "Error",
+        description: "Failed to initiate call",
+        color: "destructive",
+      });
+    }
   };
 
   const handleToggle = () => {
@@ -171,7 +175,11 @@ const PhoneCallModal = ({ open, setOpen, agent }: PhoneCallModalProps) => {
                     <FormControl>
                       <SearchableSelect
                         disabled={loading}
-                        placeholder={loading ? "Fetching phone numbers..." : "Select a phone number"}
+                        placeholder={
+                          loading
+                            ? "Fetching phone numbers..."
+                            : "Select a phone number"
+                        }
                         options={phoneNumbers}
                         defaultValue={field.value}
                         onChange={field.onChange}
