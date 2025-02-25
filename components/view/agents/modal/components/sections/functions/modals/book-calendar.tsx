@@ -51,7 +51,7 @@ interface Props {
     defaultValues: {
       description: string;
       apiKey: string;
-      eventType: string;
+      eventType: number;
       timezone: string;
     };
   } | null;
@@ -60,7 +60,7 @@ interface Props {
 const formSchema = z.object({
   description: z.string().min(1, "Description is required"),
   apiKey: z.string().min(1, "API Key is required"),
-  eventType: z.string().min(1, "Event Type is required"),
+  eventType: z.number().min(1, "Event Type is required"),
   timezone: z.string().min(1, "Timezone is required"),
 });
 
@@ -75,7 +75,7 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
     defaultValues: editState?.defaultValues || {
       description: API_TOOLS.BOOK_APPOINTMENT.description,
       apiKey: "",
-      eventType: "",
+      eventType: 0,
       timezone: "",
     },
   });
@@ -89,7 +89,7 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
       form.reset({
         description: API_TOOLS.BOOK_APPOINTMENT.description,
         apiKey: "",
-        eventType: "",
+        eventType: 0,
         timezone: "",
       });
     }
@@ -231,7 +231,7 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
                   <FormControl>
                     <Select
                       onValueChange={field.onChange}
-                      value={field.value}
+                      value={field.value.toString()}
                       disabled={isLoadingEventTypes || eventTypes.length === 0}
                     >
                       <SelectTrigger>
