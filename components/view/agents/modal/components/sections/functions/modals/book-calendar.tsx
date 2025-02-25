@@ -230,7 +230,9 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
                   <FormLabel>Event Type (Cal.com)</FormLabel>
                   <FormControl>
                     <Select
-                      onValueChange={field.onChange}
+                      onValueChange={(value) => {
+                        field.onChange(Number(value));
+                      }}
                       value={field.value.toString()}
                       disabled={isLoadingEventTypes || eventTypes.length === 0}
                     >
