@@ -81,19 +81,33 @@ export interface SimpleLlmAgent extends Llm {
 
 export interface Synthesizer {
   provider: string;
-  provider_config:
-    | PollyConfig
-    | ElevenLabsConfig
-    | AzureConfig
-    | SmallestConfig
-    | CartesiaConfig
-    | DeepgramConfig
-    | OpenAIConfig;
+  provider_config: SynthesizerConfig;
   stream: boolean;
   buffer_size?: number;
   audio_format?: string;
   caching?: boolean;
 }
+
+export const SYNTHESIZER_PROVIDERS = {
+  elevenlabs: "elevenlabs",
+  openai: "openai",
+  azure: "azure",
+  smallest: "smallest",
+  cartesia: "cartesia",
+  deepgram: "deepgram",
+  polly: "polly",
+} as const;
+
+export type SynthesizerProvider = (typeof SYNTHESIZER_PROVIDERS)[keyof typeof SYNTHESIZER_PROVIDERS];
+
+export type SynthesizerConfig =
+  | PollyConfig
+  | ElevenLabsConfig
+  | AzureConfig
+  | SmallestConfig
+  | CartesiaConfig
+  | DeepgramConfig
+  | OpenAIConfig;
 
 export interface PollyConfig {
   voice: string;
