@@ -24,7 +24,6 @@ import {
   Agent,
   AssistantStatus,
   CreateAgentPayload,
-  ElevenLabsConfig,
 } from "@/app/modules/agents/interface";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
@@ -33,6 +32,7 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
+import { getProviderConfig, getModel, getSynthProviderConfig } from "@/lib/voice";
 
 interface Props {
   agent: Agent;
@@ -48,12 +48,12 @@ const VoiceSection = ({ agent, organization }: Props) => {
   const synthesizer = task?.tools_config.synthesizer;
   const transcriber = task?.tools_config.transcriber;
   const taskConfig = task?.task_config;
-  const provider = synthesizer?.provider_config as ElevenLabsConfig;
+  const providerConfig = getProviderConfig(synthesizer);
   const form = useForm<VoiceValues>({
     resolver: zodResolver(voiceSchema),
     defaultValues: {
       provider: synthesizer?.provider || "",
-      model: provider?.voice_id || provider?.model || "",
+      model: getModel(providerConfig),
       bufferSize: synthesizer?.buffer_size || 150,
       endpointing: transcriber?.endpointing || 700,
       incrementalDelay: taskConfig?.incremental_delay || 1200,
@@ -77,9 +77,21 @@ const VoiceSection = ({ agent, organization }: Props) => {
   );
 
   const onSubmit = async (data: VoiceValues) => {
-    const synthProviderConfig = models.find(
-      (voice) => voice.voice_id === data.model
-    );
+    // Find the selected voice from models array
+    const selectedVoice = models.find((voice) => voice.voice_id === data.model);
+    
+    if (!selectedVoice) {
+      console.error("Selected voice not found");
+      return;
+    }
+
+    const synthProviderConfig = getSynthProviderConfig(data, selectedVoice);
+
+    if (!synthProviderConfig) {
+      console.error("Invalid provider config");
+      return;
+    }
+
     try {
       const updatedAgent: CreateAgentPayload = {
         agent_prompts: {
@@ -88,10 +100,7 @@ const VoiceSection = ({ agent, organization }: Props) => {
         agent_config: {
           ...agent.agent_config,
           tasks: agent.agent_config.tasks.map((task) => {
-            if (
-              task.task_type === "conversation" &&
-              task.tools_config.synthesizer
-            ) {
+            if (task.task_type === "conversation" && task.tools_config.synthesizer) {
               return {
                 ...task,
                 tools_config: {
@@ -99,10 +108,7 @@ const VoiceSection = ({ agent, organization }: Props) => {
                   synthesizer: {
                     ...task.tools_config.synthesizer,
                     provider: data.provider,
-                    provider_config: {
-                      ...task.tools_config.synthesizer.provider_config,
-                      ...synthProviderConfig,
-                    },
+                    provider_config: synthProviderConfig,
                     buffer_size: data.bufferSize,
                   },
                   transcriber: {
@@ -116,8 +122,7 @@ const VoiceSection = ({ agent, organization }: Props) => {
                   incremental_delay: data.incrementalDelay,
                   check_if_user_online: data.checkIfUserOnline,
                   check_user_online_message: data.checkUserOnlineMessage,
-                  trigger_user_online_message_after:
-                    data.triggerCheckUserOnlineMessageAfter,
+                  trigger_user_online_message_after: data.triggerCheckUserOnlineMessageAfter,
                 },
               };
             }

@@ -5,7 +5,11 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { CalendarSearch } from "lucide-react";
-import { APIParams, ToolDescription, ToolModel } from "@/app/modules/agents/interface";
+import {
+  APIParams,
+  ToolDescription,
+  ToolModel,
+} from "@/app/modules/agents/interface";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -35,6 +39,7 @@ import {
 } from "@/components/ui/select";
 import { generateToolName, API_TOOLS } from "@/constants/agent";
 import { timezones } from "@/lib/date-time";
+import { SearchableSelect } from "@/components/ui/searchable-select";
 
 interface Props {
   isOpen: boolean;
@@ -51,7 +56,6 @@ interface Props {
       timezone: string;
     };
   } | null;
-
 }
 
 const formSchema = z.object({
@@ -129,7 +133,9 @@ const CalendarAvailabilityDialog = ({
   };
 
   const onSubmit = (values: z.infer<typeof formSchema>) => {
-    const toolName = editState?.isEditing ? editState.toolName : generateToolName("check_availability_of_slots");
+    const toolName = editState?.isEditing
+      ? editState.toolName
+      : generateToolName("check_availability_of_slots");
 
     const newTool: ToolDescription = {
       name: toolName,
@@ -138,12 +144,14 @@ const CalendarAvailabilityDialog = ({
       key: API_TOOLS.CALENDAR_AVAILABILITY.key,
     };
 
+    const offset = timezones.find((tz) => tz.value === values.timezone)?.offset;
+
     const newToolParams: APIParams = {
       method: API_TOOLS.CALENDAR_AVAILABILITY.method,
       param: JSON.stringify({
         eventTypeId: values.eventType,
-        startTime: "%(startTime)s",
-        endTime: "%(endTime)s",
+        startTime: `%(startTime)s${offset}`,
+        endTime: `%(endTime)s${offset}`,
         timeZone: values.timezone,
       }),
       url: `${API_TOOLS.CALENDAR_AVAILABILITY.baseUrl}?apiKey=${values.apiKey}`,
@@ -177,7 +185,11 @@ const CalendarAvailabilityDialog = ({
                 <FormItem>
                   <FormLabel>Description (Prompt)</FormLabel>
                   <FormControl>
-                    <Textarea {...field} placeholder="Enter description" rows={8} />
+                    <Textarea
+                      {...field}
+                      placeholder="Enter description"
+                      rows={8}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -240,25 +252,16 @@ const CalendarAvailabilityDialog = ({
               control={form.control}
               name="timezone"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-2">
                   <FormLabel>Timezone</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select timezone" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {timezones.map((timezone) => (
-                        <SelectItem key={timezone.value} value={timezone.value}>
-                          {timezone.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <SearchableSelect
+                      options={timezones}
+                      defaultValue={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select timezone"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

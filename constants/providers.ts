@@ -15,7 +15,7 @@ export const PROVIDERS = [
     label: "Anthropic",
     models: [
       {
-        key: "claude-3-5-sonnet-20240620",
+        key: "anthropic/claude-3-5-sonnet-20240620",
         label: "Claude 3.5 Sonnet",
         family: "anthropic",
       },
@@ -27,7 +27,7 @@ export const PROVIDERS = [
     label: "Groq",
     models: [
       {
-        key: "meta-llama-3-8b-instruct",
+        key: "groq/meta-llama-3-8b-instruct",
         label: "Meta Llama 3.8B Instruct",
         family: "llama",
       },
@@ -44,34 +44,6 @@ export const PROVIDERS = [
         family: "llama",
       },
     ],
-  },
-  {
-    category: "transcriber",
-    key: "whisper",
-    label: "Whisper",
-    models: [
-      { key: "whisper-1", label: "Whisper Model 1", family: "whisper" },
-      { key: "whisper-2", label: "Whisper Model 2", family: "whisper" },
-    ],
-  },
-  {
-    category: "transcriber",
-    key: "deepgram",
-    label: "Deepgram",
-    models: [
-      { key: "nova-2", label: "Nova 2", family: "deepgram" },
-      {
-        key: "nova-2-phonecall",
-        label: "Nova 2 Phonecall",
-        family: "deepgram",
-      },
-    ],
-  },
-  {
-    category: "synthesizer",
-    key: "deepgram",
-    label: "Deepgram",
-    models: [{ key: "aura-asteria-en", label: "Asteria", family: "deepgram" }],
   },
   {
     category: "telephony",
@@ -105,6 +77,21 @@ export const VOICE_PROVIDERS = [
     label: "Cartesia",
     value: "cartesia",
     key: "cartesia",
+  },
+  {
+    label: "AWS Polly",
+    value: "polly",
+    key: "polly",
+  },
+  {
+    label: "Azure",
+    value: "azure",
+    key: "azure",
+  },
+  {
+    label: "Smallest",
+    value: "smallest",
+    key: "smallest",
   },
 ];
 

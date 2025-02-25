@@ -7,6 +7,7 @@ export interface Voice {
   name: string;
   model: string;
   language_code: string;
+  language: string;
   accent?: string;
   custom: boolean;
   gender?: string;

@@ -39,7 +39,7 @@ import {
 } from "@/components/ui/select";
 import { generateToolName, API_TOOLS } from "@/constants/agent";
 import { timezones } from "@/lib/date-time";
-
+import { SearchableSelect } from "@/components/ui/searchable-select";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
@@ -138,6 +138,8 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
       key: API_TOOLS.BOOK_APPOINTMENT.key,
     };
 
+    const offset = timezones.find((tz) => tz.value === values.timezone)?.offset;
+
     const newToolParams: APIParams = {
       method: API_TOOLS.BOOK_APPOINTMENT.method,
       param: JSON.stringify({
@@ -149,8 +151,8 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
             value: "inPerson",
           },
         },
-        start: "%(preferred_date)sT%(preferred_time)s:00.000",
-        eventTypeId: values.eventType,
+        start: `%(preferred_date)sT%(preferred_time)s:00.000${offset}`,
+        eventTypeId: Number(values.eventType),
         timeZone: values.timezone,
         language: "en",
         metadata: {},
@@ -252,25 +254,16 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
               control={form.control}
               name="timezone"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="flex flex-col gap-2">
                   <FormLabel>Timezone</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select timezone" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {timezones.map((timezone) => (
-                        <SelectItem key={timezone.value} value={timezone.value}>
-                          {timezone.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormControl>
+                    <SearchableSelect
+                      options={timezones}
+                      defaultValue={field.value}
+                      onChange={field.onChange}
+                      placeholder="Select timezone"
+                    />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
