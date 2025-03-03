@@ -214,6 +214,7 @@ export interface ConversationConfig {
   check_user_online_message?: string;
   check_if_user_online?: boolean;
   call_hangup_message?: string;
+  generate_precise_transcript?: boolean;
 }
 
 export interface Routes {

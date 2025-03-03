@@ -36,7 +36,7 @@ import { useEffect, useState } from "react";
 import { TranscribersConfig } from "@/app/modules/models-config/interface";
 import { getTranscribers } from "@/app/modules/models-config/action";
 import { LANGUAGES } from "@/constants/providers";
-
+import { Switch } from "@/components/ui/switch";
 interface Props {
   agent: Agent;
 }
@@ -57,6 +57,8 @@ const TranscriberSection = ({ agent }: Props) => {
       language: transcriber?.language || "",
       keywords: transcriber?.keywords || "",
       interruptionWait: task?.task_config.number_of_words_for_interruption || 0,
+      generatePreciseTranscript:
+        task?.task_config.generate_precise_transcript || false,
     },
   });
 
@@ -127,6 +129,7 @@ const TranscriberSection = ({ agent }: Props) => {
                 task_config: {
                   ...task.task_config,
                   number_of_words_for_interruption: data.interruptionWait,
+                  generate_precise_transcript: data.generatePreciseTranscript,
                 },
               };
             }
@@ -267,6 +270,28 @@ const TranscriberSection = ({ agent }: Props) => {
                 Enter certain keywords/proper nouns you&apos;d want to boost
                 while understanding speech
               </FormDescription>
+            </FormItem>
+          )}
+        />
+
+        {/* Generate Precise Transcript */}
+        <FormField
+          control={form.control}
+          name="generatePreciseTranscript"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Generate Precise Transcript</FormLabel>
+              <FormDescription>
+                Agent will try to generate more precise transcripts during
+                interruptions
+              </FormDescription>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <FormMessage />
             </FormItem>
           )}
         />

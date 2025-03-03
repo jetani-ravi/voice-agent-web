@@ -320,6 +320,7 @@ export const DEFAULT_AGENT: CreateAgentPayload = {
           number_of_words_for_interruption: 2,
           backchanneling_message_gap: 5,
           call_hangup_message: "",
+          generate_precise_transcript: false,
         },
         task_type: "conversation",
         toolchain: {

@@ -37,6 +37,7 @@ export const transcriberSchema = z.object({
   language: z.string().nonempty("Language is required"),
   keywords: z.string().optional(),
   interruptionWait: z.number().min(1).max(10),
+  generatePreciseTranscript: z.boolean().optional().default(false),
 });
 
 export const voiceSchema = z.object({
