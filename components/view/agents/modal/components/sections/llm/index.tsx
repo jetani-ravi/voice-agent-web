@@ -118,8 +118,8 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
   };
 
   const handleCloseModal = () => {
-    setIsOpen(false);
     setSelectedFaq(null);
+    setIsOpen(false);
   };
 
   const selectedProvider = PROVIDERS.find(

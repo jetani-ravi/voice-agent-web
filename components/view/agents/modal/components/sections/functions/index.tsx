@@ -71,6 +71,7 @@ const FunctionsSection = ({ agent }: Props) => {
   });
 
   const toggleDialog = (dialog: keyof typeof dialogs) => {
+    setEditState(null);
     setDialogs((prev) => ({
       ...prev,
       [dialog]: !prev[dialog],

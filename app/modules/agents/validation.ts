@@ -40,6 +40,7 @@ export const transcriberSchema = z.object({
 });
 
 export const voiceSchema = z.object({
+  responseRate: z.string().nonempty("Response rate is required"),
   provider: z.string().nonempty("Provider is required"),
   model: z.string().nonempty("Model is required"),
   bufferSize: z.number().min(1).max(400),

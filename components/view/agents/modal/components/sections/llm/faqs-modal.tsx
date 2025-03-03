@@ -62,8 +62,13 @@ export default function FaqsModal({
     form.reset();
   };
 
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>{initialData ? "Edit FAQ" : "Add new FAQ"}</DialogTitle>
@@ -181,7 +186,7 @@ export default function FaqsModal({
             </div>
 
             <div className="flex justify-end gap-2">
-              <Button variant="outline" type="button" onClick={onClose}>
+              <Button variant="outline" type="button" onClick={handleClose}>
                 Cancel
               </Button>
               <Button type="submit" onClick={form.handleSubmit(onSubmit)}>

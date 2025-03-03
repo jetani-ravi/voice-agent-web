@@ -71,6 +71,11 @@ const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
     }
   }, [isOpen, editState]);
 
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const toolName = editState?.isEditing
       ? editState.toolName
@@ -93,12 +98,11 @@ const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
     };
 
     onSave(newTool, newToolParams);
-    form.reset();
-    onClose();
+    handleClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

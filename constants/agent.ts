@@ -359,3 +359,28 @@ export const VECTOR_DB = {
   LANCEDB: "lancedb",
   QDRANT: "qdrant",
 };
+
+export const RESPONSE_RATES = {
+  RAPID: {
+    label: "Rapid",
+    incrementalDelay: 500,
+    endpointing: 200,
+    description: "Agent will try to answer with minimum latency, often interrupting humans if they are speaking with pauses"
+  },
+  NORMAL: {
+    label: "Normal",
+    incrementalDelay: 1200,
+    endpointing: 700,
+    description: "Agent will balance low latency and patient responses, may interrupt in long pauses"
+  },
+  PATIENT: {
+    label: "Patient",
+    incrementalDelay: 1800,
+    endpointing: 1000,
+    description: "Agent will respond patiently, allowing user to complete their sentences (slightly higher latency)"
+  },
+  CUSTOM: {
+    label: "Custom",
+    description: "Customize the response timing settings"
+  }
+} as const;

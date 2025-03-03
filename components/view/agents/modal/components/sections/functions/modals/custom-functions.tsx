@@ -107,7 +107,7 @@ const CustomFunctionDialog = ({
       };
 
       onSave(toolDescription, toolParams);
-      onClose();
+      handleClose();
     } catch (error) {
       toast({
         title: "Error saving custom function",
@@ -120,8 +120,13 @@ const CustomFunctionDialog = ({
     }
   };
 
+  const handleClose = () => {
+    setJsonData(API_TOOLS.CUSTOM_FUNCTION);
+    onClose();
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="min-w-[60%] h-[90vh]">
         <DialogHeader>
           <DialogTitle>Your Custom Function Configuration</DialogTitle>

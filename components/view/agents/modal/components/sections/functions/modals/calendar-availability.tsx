@@ -132,6 +132,11 @@ const CalendarAvailabilityDialog = ({
     }
   };
 
+  const handleClose = () => {
+    form.reset();
+    onClose();
+  };
+
   const onSubmit = (values: z.infer<typeof formSchema>) => {
     const toolName = editState?.isEditing
       ? editState.toolName
@@ -159,12 +164,11 @@ const CalendarAvailabilityDialog = ({
     };
 
     onSave(newTool, newToolParams);
-    form.reset();
-    onClose();
+    handleClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={handleClose}>
       <DialogContent className="">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">

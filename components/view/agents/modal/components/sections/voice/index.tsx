@@ -33,6 +33,7 @@ import { Separator } from "@/components/ui/separator";
 import { useRouter } from "next/navigation";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
 import { getProviderConfig, getModel, getSynthProviderConfig } from "@/lib/voice";
+import { RESPONSE_RATES } from "@/constants/agent";
 
 interface Props {
   agent: Agent;
@@ -49,9 +50,27 @@ const VoiceSection = ({ agent, organization }: Props) => {
   const transcriber = task?.tools_config.transcriber;
   const taskConfig = task?.task_config;
   const providerConfig = getProviderConfig(synthesizer);
+
+  const getResponseRate = (incrementalDelay?: number, endpointing?: number) => {
+    if (!incrementalDelay || !endpointing) return "NORMAL";
+
+    // Check for exact matches
+    for (const [key, value] of Object.entries(RESPONSE_RATES)) {
+      if ('incrementalDelay' in value && 
+          value.incrementalDelay === incrementalDelay && 
+          value.endpointing === endpointing) {
+        return key;
+      }
+    }
+
+    // If values don't match any preset, it's custom
+    return "CUSTOM";
+  };
+
   const form = useForm<VoiceValues>({
     resolver: zodResolver(voiceSchema),
     defaultValues: {
+      responseRate: getResponseRate(taskConfig?.incremental_delay, transcriber?.endpointing),
       provider: synthesizer?.provider || "",
       model: getModel(providerConfig),
       bufferSize: synthesizer?.buffer_size || 150,
@@ -75,6 +94,21 @@ const VoiceSection = ({ agent, organization }: Props) => {
   const models = organization?.voices?.filter(
     (voice) => voice.provider === selectedProvider
   );
+
+  // Watch responseRate to conditionally render sliders
+  const selectedRate = form.watch("responseRate");
+
+  // Update values when response rate changes
+  const handleResponseRateChange = (value: string) => {
+    form.setValue("responseRate", value);
+    if (value !== "CUSTOM" && value in RESPONSE_RATES) {
+      const rate = RESPONSE_RATES[value as keyof typeof RESPONSE_RATES];
+      if ('incrementalDelay' in rate) {
+        form.setValue("incrementalDelay", rate.incrementalDelay);
+        form.setValue("endpointing", rate.endpointing);
+      }
+    }
+  };
 
   const onSubmit = async (data: VoiceValues) => {
     // Find the selected voice from models array
@@ -241,56 +275,91 @@ const VoiceSection = ({ agent, organization }: Props) => {
 
         <Separator />
 
-        {/* Endpointing Slider */}
+        {/* Response Rate Select */}
         <FormField
           control={form.control}
-          name="endpointing"
+          name="responseRate"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Endpointing (ms)</FormLabel>
-              <FormDescription>
-                Number of milliseconds your agent will wait before generating
-                response.
-              </FormDescription>
+              <FormLabel>Response Rate</FormLabel>
               <FormControl>
-                <Slider
-                  value={[field.value]}
-                  onValueChange={(value) => field.onChange(value[0])}
-                  step={100}
-                  max={5000}
-                  min={0}
-                  className="w-full"
-                />
+                <Select
+                  onValueChange={handleResponseRateChange}
+                  value={field.value}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select Response Rate" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(RESPONSE_RATES).map(([key, value]) => (
+                      <SelectItem key={key} value={key}>
+                        {value.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </FormControl>
+              <FormDescription>
+                {RESPONSE_RATES[field.value as keyof typeof RESPONSE_RATES]?.description}
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        {/* Incremental Delay Slider */}
-        <FormField
-          control={form.control}
-          name="incrementalDelay"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Linear Delay (ms)</FormLabel>
-              <FormDescription>
-                Linear delay accounts for long pauses mid-sentence.
-              </FormDescription>
-              <FormControl>
-                <Slider
-                  value={[field.value]}
-                  onValueChange={(value) => field.onChange(value[0])}
-                  step={100}
-                  max={2500}
-                  min={0}
-                  className="w-full"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        {/* Show endpointing and incremental delay sliders only for Custom rate */}
+        {selectedRate === "CUSTOM" && (
+          <>
+            <FormField
+              control={form.control}
+              name="endpointing"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Endpointing (ms)</FormLabel>
+                  <FormDescription>
+                    Number of milliseconds your agent will wait before generating
+                    response.
+                  </FormDescription>
+                  <FormControl>
+                    <Slider
+                      value={[field.value]}
+                      onValueChange={(value) => field.onChange(value[0])}
+                      step={100}
+                      max={5000}
+                      min={0}
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="incrementalDelay"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Linear Delay (ms)</FormLabel>
+                  <FormDescription>
+                    Linear delay accounts for long pauses mid-sentence.
+                  </FormDescription>
+                  <FormControl>
+                    <Slider
+                      value={[field.value]}
+                      onValueChange={(value) => field.onChange(value[0])}
+                      step={100}
+                      max={2500}
+                      min={0}
+                      className="w-full"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </>
+        )}
 
         <Separator />
 
