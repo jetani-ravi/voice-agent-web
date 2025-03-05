@@ -8,7 +8,8 @@ import { me } from '@/app/modules/user/action';
 import { Agent } from '@/app/modules/agents/interface';
 import { Card, CardContent } from '@/components/ui/card';
 import { format } from 'date-fns';
-
+import { useSession } from 'next-auth/react';
+import { useToast } from '@/hooks/use-toast';
 interface Message {
   role: 'user' | 'assistant';
   content: string | React.ReactNode;
@@ -28,6 +29,8 @@ const LLMChat: React.FC<LLMChatProps> = ({ agent, onStop }) => {
   const [inputMessage, setInputMessage] = useState('');
   const ws = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { data: session } = useSession()
+  const { toast } = useToast();
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -44,7 +47,15 @@ const LLMChat: React.FC<LLMChatProps> = ({ agent, onStop }) => {
       org_id = result.data!.active_organization._id;
     }
 
-    const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL}/chat/v1/${agent.agent_id}?user_id=${agent.user_id}&turn_based_conversation=true&org_id=${org_id}`;
+    if (!session?.user.id) {
+      toast({
+        title: 'Session Expired',
+        description: 'Please login again',
+        variant: 'destructive',
+      });
+      return;
+    }
+    const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL}/chat/v1/${agent.agent_id}?user_id=${session?.user.id}&turn_based_conversation=true&org_id=${org_id}`;
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {
