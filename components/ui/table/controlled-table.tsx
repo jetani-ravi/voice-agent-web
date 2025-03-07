@@ -33,6 +33,8 @@ interface ControlledTableProps<TData, TValue> {
   canViewOptions?: boolean;
   onRowClick?: (row: TData) => void;
   searchPlaceholder?: string;
+  alignFiltersToSearch?: "start" | "end";
+  initialPageSize?: number;
 }
 
 const ControlledTable = <TData, TValue>({
@@ -45,6 +47,8 @@ const ControlledTable = <TData, TValue>({
   canViewOptions = true,
   onRowClick,
   searchPlaceholder = "Search...",
+  alignFiltersToSearch,
+  initialPageSize = 10,
 }: ControlledTableProps<TData, TValue>) => {
   const router = useRouter();
   const pathname = usePathname();
@@ -55,7 +59,7 @@ const ControlledTable = <TData, TValue>({
   );
 
   const currentPage = Number(searchParams?.get("page") || "1");
-  const pageSize = Number(searchParams?.get("limit") || "10");
+  const pageSize = Number(searchParams?.get("limit") || initialPageSize);
 
   const table = useReactTable({
     data,
@@ -116,17 +120,27 @@ const ControlledTable = <TData, TValue>({
     <div>
       <div className="flex justify-between items-center mb-4">
         {canSearch && (
-          <div className="flex gap-2 items-center">
-            <Input
-              placeholder={searchPlaceholder}
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
+          <div
+            className={`flex flex-wrap flex-grow gap-4 ${
+              alignFiltersToSearch === "end" && "justify-between"
+            } items-center`}
+          >
+            <div className="flex gap-2 items-center">
+              <Input
+                placeholder={searchPlaceholder}
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="max-w-sm"
+              />
+            </div>
+            {alignFiltersToSearch && (
+              <div className="flex mr-4">{filterElements}</div>
+            )}
           </div>
         )}
         {canViewOptions && <DataTableViewOptions table={table} />}
       </div>
-      {filterElements && (
+      {!alignFiltersToSearch && filterElements && (
         <div className="flex justify-end mb-4">{filterElements}</div>
       )}
       <div className="rounded-md border">
