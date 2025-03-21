@@ -7,6 +7,8 @@ import { DEFAULT_AGENT } from "@/constants/agent";
 import { getActiveOrganization } from "@/app/modules/organizations/action";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
+import { getSystemProviders } from "@/app/modules/providers/action";
+import { SystemProviders } from "@/app/modules/providers/interface";
 
 const breadcrumbs = [
   {
@@ -20,8 +22,8 @@ const breadcrumbs = [
 ];
 
 const CreateAgent = async () => {
-  const [knowledgeBaseResult, activeOrganizationResult] =
-    await Promise.allSettled([getKnowledgeBases({}), getActiveOrganization()]);
+  const [knowledgeBaseResult, activeOrganizationResult, systemProvidersResult] =
+    await Promise.allSettled([getKnowledgeBases({}),  getActiveOrganization(), getSystemProviders()]);
   let knowledge_bases: KnowledgeBase[] = [];
   if (
     knowledgeBaseResult.status === "fulfilled" &&
@@ -53,6 +55,22 @@ const CreateAgent = async () => {
     );
   }
 
+  // Handle system providers fetch result
+  let systemProviders: SystemProviders[] = [];
+  if (
+    systemProvidersResult.status === "fulfilled" &&
+    systemProvidersResult.value.success
+  ) {
+    systemProviders = systemProvidersResult.value.data!.providers;
+  } else {
+    console.error(
+      "Failed to fetch system providers:",
+      systemProvidersResult.status === "rejected"
+        ? systemProvidersResult.reason
+        : systemProvidersResult.value
+    );
+  }
+
   return (
     <ScreenContainer>
       <Header breadcrumbs={breadcrumbs} />
@@ -61,6 +79,7 @@ const CreateAgent = async () => {
           agent={DEFAULT_AGENT}
           knowledgeBases={knowledge_bases}
           organization={organization!}
+          systemProviders={systemProviders}
         />
       </ScreenContent>
     </ScreenContainer>
