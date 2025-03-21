@@ -11,4 +11,6 @@ export const PLAYBACK_RATES = [
     { value: "2.5", label: "2.5x" },
     { value: "3", label: "3x" }
   ];
+
+export const VOICE_AGENT_MANAGED_PHONE_NUMBER = "Voice Agent managed phone number";
   

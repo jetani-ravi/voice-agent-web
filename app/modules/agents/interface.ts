@@ -170,9 +170,15 @@ export interface IOModel {
 }
 
 export interface ToolModel {
-  tools?: ToolDescription[];
+  tools?: ToolFunction[];
   tools_params: Record<string, APIParams>;
 }
+
+export interface ToolFunction {
+  type: string;
+  function: ToolDescription;
+}
+
 
 export interface ToolDescription {
   name: string;

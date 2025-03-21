@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/form";
 import { PhoneInput } from "@/components/ui/phone-input";
 import { Option, SearchableSelect } from "@/components/ui/searchable-select";
+import { VOICE_AGENT_MANAGED_PHONE_NUMBER } from "@/constants/common";
 import { useToast } from "@/hooks/use-toast";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -43,9 +44,7 @@ const formSchema = z.object({
   recipient_phone_number: z.string().min(1, {
     message: "Phone number is required",
   }),
-  from_phone_number: z
-    .string()
-    .min(1, { message: "From Phone number is required" }),
+  from_phone_number: z.string().optional(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -59,13 +58,18 @@ const PhoneCallModal = ({ open, setOpen, agent }: PhoneCallModalProps) => {
 
   const fetchPhoneNumbers = async (provider: string = "twilio") => {
     const result = await getPhoneNumbers({ provider });
+    const voiceAgentManagedPhoneNumber = {
+      value: VOICE_AGENT_MANAGED_PHONE_NUMBER,
+      label: VOICE_AGENT_MANAGED_PHONE_NUMBER,
+    };
     if (result.success) {
-      setPhoneNumbers(
-        result.data?.phone_numbers.map((phoneNumber) => ({
+      setPhoneNumbers([
+        voiceAgentManagedPhoneNumber,
+        ...result.data?.phone_numbers.map((phoneNumber) => ({
           value: phoneNumber.phone_number,
           label: phoneNumber.phone_number,
-        })) || []
-      );
+        })) || [],
+      ]);
       return;
     }
     handleToast({ result });
@@ -118,12 +122,19 @@ const PhoneCallModal = ({ open, setOpen, agent }: PhoneCallModalProps) => {
         const payload: InitiateCall = {
           recipient_phone_number: data.recipient_phone_number,
           agent_id: agent?.agent_id,
-          from_phone_number: data.from_phone_number,
+          ...(data.from_phone_number !== VOICE_AGENT_MANAGED_PHONE_NUMBER && { from_phone_number: data.from_phone_number }),
         };
         const result = await me();
         const user = result.data!;
-        const callResult = await initiateCall(payload, user._id, user.active_organization._id);
-        handleToast({ result: callResult, successMessage: "Call has been initiated to the recipient" });
+        const callResult = await initiateCall(
+          payload,
+          user._id,
+          user.active_organization._id
+        );
+        handleToast({
+          result: callResult,
+          successMessage: "Call has been initiated to the recipient",
+        });
         handleToggle();
       });
     } catch (error) {

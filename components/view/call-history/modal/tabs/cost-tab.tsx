@@ -15,7 +15,7 @@ interface CostTabProps {
 
 export function CostTab({ execution }: CostTabProps) {
   const costBreakdown = execution.cost_breakdown || {};
-  const totalCost = execution.total_cost || 0;
+  const totalCost = execution.total_cost || 0.0;
   
   // Generate colors for the pie chart segments
   const COLORS = [
@@ -30,7 +30,7 @@ export function CostTab({ execution }: CostTabProps) {
   // Format data for Recharts
   const chartData = Object.entries(costBreakdown).map(([name, value], index) => ({
     name: name.charAt(0).toUpperCase() + name.slice(1) || "Unknown", // Capitalize first letter
-    value: Number(value) || 0.01, // TODO: Remove this 0.01
+    value: Number(value) || 0.0,
     color: COLORS[index % COLORS.length]
   }));
   
@@ -51,9 +51,8 @@ export function CostTab({ execution }: CostTabProps) {
     );
   }
 
-  // Format a number to show only 2 decimal places
-  const formatCost = (value: number) => {
-    return value.toFixed(2);
+  const formatCost = (value: number, precision: number = 3) => {
+    return value.toFixed(precision);
   };
 
   return (
@@ -86,7 +85,8 @@ export function CostTab({ execution }: CostTabProps) {
               <ChartTooltip
                 content={
                   <ChartTooltipContent 
-                    // hideLabel
+                    hideLabel
+                    indicator="dot"
                   />
                 }
               />
@@ -108,7 +108,7 @@ export function CostTab({ execution }: CostTabProps) {
               style={{ backgroundColor: entry.color }}
             ></div>
             <span className="text-sm">{entry.name}</span>
-            <span className="text-sm ml-auto">${formatCost(entry.value)}</span>
+            <span className="text-sm ml-auto">${formatCost(entry.value, 6)}</span>
           </div>
         ))}
       </CardContent>
@@ -118,7 +118,7 @@ export function CostTab({ execution }: CostTabProps) {
         {chartData.map((entry) => (
           <Card key={entry.name} className="p-4 bg-sidebar text-sidebar-foreground">
             <div className="text-sm font-medium">{entry.name}</div>
-            <div className="text-xl font-bold mt-1">${formatCost(entry.value)}</div>
+            <div className="text-xl font-bold mt-1">${formatCost(entry.value, 6)}</div>
           </Card>
         ))}
       </CardContent>
