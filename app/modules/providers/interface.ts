@@ -21,8 +21,8 @@ export interface SystemProviders {
   category: string;
   credentials: Record<string, CredentialConfig>;
   is_supported?: boolean;
-  models: ModelsConfig[];
-  show_in_providers: boolean;
+  models?: ModelsConfig[];
+  show_in_providers?: boolean;
   version?: number;
   iconPath?: string;
   created_at: string;

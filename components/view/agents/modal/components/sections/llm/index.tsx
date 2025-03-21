@@ -251,7 +251,7 @@ const LLMSection = ({ agent, knowledgeBases, systemProviders }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("model", selectedProvider?.models[0].value || ""); // Reset model field
+                    form.setValue("model", selectedProvider?.models?.[0]?.value || ""); // Reset model field
                   }}
                   value={field.value}
                 >
