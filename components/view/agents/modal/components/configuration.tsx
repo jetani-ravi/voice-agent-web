@@ -22,17 +22,20 @@ import CallSection from "./sections/call";
 import FunctionsSection from "./sections/functions";
 import PostCallAnalytics from "./sections/analytics";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
+import { SystemProviders } from "@/app/modules/providers/interface";
 
 interface Props {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
   organization: ActiveOrganizationDetails;
+  systemProviders: SystemProviders[];
 }
 
 const ConfigurationSection = ({
   agent,
   knowledgeBases,
   organization,
+  systemProviders
 }: Props) => {
   return (
     <div className="flex-1 px-6 py-4 bg-card overflow-y-auto rounded-lg">
@@ -45,7 +48,7 @@ const ConfigurationSection = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <LLMSection agent={agent} knowledgeBases={knowledgeBases} />
+            <LLMSection agent={agent} knowledgeBases={knowledgeBases} systemProviders={systemProviders} />
           </AccordionContent>
         </AccordionItem>
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { api } from "@/lib/fetchAPI";
-import { ListSystemProviders, UserProviders } from "./interface";
+import { ListSystemProvidersWithConnection, ListSystemProviders, UserProviders } from "./interface";
 import { createParams, SearchParams } from "@/lib/searchParams";
 import { revalidatePath } from "next/cache";
 import { ConnectProvidersValues } from "./validation";
@@ -9,6 +9,15 @@ import { ConnectProvidersValues } from "./validation";
 export const getProvidersWithConnection = async (params: SearchParams = {}) => {
   const searchParams = createParams(params);
   const url = `/providers${searchParams ? `?${searchParams}` : ""}`;
+  const response = await api.get<ListSystemProvidersWithConnection>(url, {
+    bearer: true,
+  });
+  return response;
+};
+
+export const getSystemProviders = async (params: SearchParams = {}) => {
+  const searchParams = createParams(params);
+  const url = `/providers/system${searchParams ? `?${searchParams}` : ""}`;
   const response = await api.get<ListSystemProviders>(url, {
     bearer: true,
   });

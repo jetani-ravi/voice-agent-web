@@ -15,7 +15,7 @@ import {
   APIParams,
   AssistantStatus,
   CreateAgentPayload,
-  ToolDescription,
+  ToolFunction,
   ToolModel,
 } from "@/app/modules/agents/interface";
 import {
@@ -78,17 +78,17 @@ const FunctionsSection = ({ agent }: Props) => {
     }));
   };
 
-  const updateApiTools = (tool: ToolDescription, toolParams: APIParams) => {
+  const updateApiTools = (tool: ToolFunction, toolParams: APIParams) => {
     setApiToolsConfig((prev) => {
       const updatedTools = editState?.isEditing
-        ? prev.tools!.map((t) => (t.name === editState.toolName ? tool : t))
-        : [...(prev.tools?.filter((t) => t.name !== tool.name) || []), tool];
+        ? prev.tools!.map((t) => (t.function.name === editState.toolName ? tool : t))
+        : [...(prev.tools?.filter((t) => t.function.name !== tool.function.name) || []), tool];
 
       return {
         tools: updatedTools,
         tools_params: {
           ...prev.tools_params,
-          [tool.name]: toolParams,
+          [tool.function.name]: toolParams,
         },
       };
     });
@@ -99,7 +99,7 @@ const FunctionsSection = ({ agent }: Props) => {
 
   const handleDeleteTool = (toolName: string) => {
     setApiToolsConfig((prev) => {
-      const updatedTools = prev.tools!.filter((t) => t.name !== toolName);
+      const updatedTools = prev.tools!.filter((t) => t.function.name !== toolName);
 
       // Remove the tool from tools_params
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -113,10 +113,10 @@ const FunctionsSection = ({ agent }: Props) => {
   };
 
   const handleEditTool = (toolName: string) => {
-    const tool = apiToolsConfig.tools?.find((t) => t.name === toolName);
+    const tool = apiToolsConfig.tools?.find((t) => t.function.name === toolName);
     const toolParams = apiToolsConfig.tools_params[toolName];
 
-    if (tool?.key === "check_availability_of_slots") {
+    if (tool?.function.key === "check_availability_of_slots") {
       try {
         const params = JSON.parse(toolParams.param || "");
         setDialogs((prev) => ({
@@ -129,7 +129,7 @@ const FunctionsSection = ({ agent }: Props) => {
           isEditing: true,
           toolName,
           defaultValues: {
-            description: tool.description,
+            description: tool.function.description,
             apiKey: toolParams.api_token,
             eventType: params.eventTypeId,
             timezone: params.timeZone,
@@ -138,7 +138,7 @@ const FunctionsSection = ({ agent }: Props) => {
       } catch (error) {
         console.error("Error parsing tool params:", error);
       }
-    } else if (tool?.key === "book_appointment") {
+    } else if (tool?.function.key === "book_appointment") {
       try {
         const params = JSON.parse(toolParams.param || "");
         setDialogs((prev) => ({
@@ -151,7 +151,7 @@ const FunctionsSection = ({ agent }: Props) => {
           isEditing: true,
           toolName,
           defaultValues: {
-            description: tool.description,
+            description: tool.function.description,
             apiKey: toolParams.api_token,
             eventType: params.eventTypeId,
             timezone: params.timeZone,
@@ -160,7 +160,7 @@ const FunctionsSection = ({ agent }: Props) => {
       } catch (error) {
         console.error("Error parsing tool params:", error);
       }
-    } else if (tool?.key === "transfer_call") {
+    } else if (tool?.function.key === "transfer_call") {
       try {
         const params = JSON.parse(toolParams.param || "");
         setDialogs((prev) => ({
@@ -173,14 +173,14 @@ const FunctionsSection = ({ agent }: Props) => {
           isEditing: true,
           toolName,
           defaultValues: {
-            description: tool.description,
+            description: tool?.function.description,
             callTransferNumber: params.call_transfer_number,
           },
         });
       } catch (error) {
         console.error("Error parsing tool params:", error);
       }
-    } else if (tool?.key.startsWith("custom_")) {
+    } else {
       setDialogs((prev) => ({
         ...prev,
         customFunction: true,
@@ -190,12 +190,12 @@ const FunctionsSection = ({ agent }: Props) => {
         isEditing: true,
         toolName,
         defaultValues: {
-          description: tool?.description || "",
+          description: tool?.function.description || "",
           functionConfig: {
-            name: tool?.name || "",
-            description: tool?.description || "",
-            parameters: tool?.parameters || {},
-            key: tool?.key || "",
+            name: tool?.function.name || "",
+            description: tool?.function.description || "",
+            parameters: tool?.function.parameters || {},
+            key: tool?.function.key || "",
             value: {
               method: toolParams?.method || "GET",
               param: toolParams?.param || {},
@@ -268,18 +268,18 @@ const FunctionsSection = ({ agent }: Props) => {
         </p>
         {apiToolsConfig.tools?.map((tool) => (
           <div
-            key={tool.key}
+            key={tool.function.key}
             className="flex justify-between items-center bg-muted p-1 w-full rounded-md"
           >
-            <h5 className="text-sm font-medium flex">{tool.key}</h5>
+            <h5 className="text-sm font-medium flex">{tool.function.key}</h5>
             <div className="flex gap-2">
               <Pencil
                 className="h-4 w-4 text-muted-foreground cursor-pointer"
-                onClick={() => handleEditTool(tool.name)}
+                onClick={() => handleEditTool(tool.function.name)}
               />
               <Trash
                 className="h-4 w-4 text-muted-foreground cursor-pointer"
-                onClick={() => handleDeleteTool(tool.name)}
+                onClick={() => handleDeleteTool(tool.function.name)}
               />
             </div>
           </div>

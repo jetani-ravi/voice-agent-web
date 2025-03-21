@@ -7,6 +7,8 @@ import NotFound from "@/components/not-found";
 import { getActiveOrganization } from "@/app/modules/organizations/action";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
+import { getSystemProviders } from "@/app/modules/providers/action";
+import { SystemProviders } from "@/app/modules/providers/interface";
 
 const breadcrumbs = [
   {
@@ -27,11 +29,12 @@ const AgentDetail = async ({
   const agent_id = (await params).agent_id;
 
   // Fetch data in parallel using Promise.allSettled
-  const [agentResult, knowledgeBaseResult, activeOrganizationResult] =
+  const [agentResult, knowledgeBaseResult, activeOrganizationResult, systemProvidersResult] =
     await Promise.allSettled([
       getAgent(agent_id),
       getKnowledgeBases({}),
       getActiveOrganization(),
+      getSystemProviders(),
     ]);
 
   // Handle agent fetch result
@@ -82,6 +85,22 @@ const AgentDetail = async ({
     );
   }
 
+  // Handle system providers fetch result
+  let systemProviders: SystemProviders[] = [];
+  if (
+    systemProvidersResult.status === "fulfilled" &&
+    systemProvidersResult.value.success
+  ) {
+    systemProviders = systemProvidersResult.value.data!.providers;
+  } else {
+    console.error(
+      "Failed to fetch system providers:",
+      systemProvidersResult.status === "rejected"
+        ? systemProvidersResult.reason
+        : systemProvidersResult.value
+    );
+  }
+
   return (
     <ScreenContainer>
       <Header breadcrumbs={breadcrumbs} />
@@ -90,6 +109,7 @@ const AgentDetail = async ({
           agent={agent}
           knowledgeBases={knowledge_bases}
           organization={organization!}
+          systemProviders={systemProviders}
         />
       </ScreenContent>
     </ScreenContainer>

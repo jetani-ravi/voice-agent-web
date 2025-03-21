@@ -9,6 +9,7 @@ import {
   Package,
   Phone,
   Settings2,
+  History,
 } from "lucide-react";
 
 import { NavMain } from "@/components/navbar/nav-main";
@@ -30,6 +31,11 @@ const data = {
       title: "Agents",
       url: "/agents",
       icon: Bot,
+    },
+    {
+      title: "Call History",
+      url: "/call-history",
+      icon: History,
     },
     {
       title: "Knowledge Base",

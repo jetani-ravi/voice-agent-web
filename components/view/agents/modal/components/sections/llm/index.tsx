@@ -38,19 +38,20 @@ import {
   GraphAgentConfig,
   LlmAgent,
 } from "@/app/modules/agents/interface";
-import { PROVIDERS } from "@/constants/providers";
 import { useRouter } from "next/navigation";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import FaqsModal from "./faqs-modal";
 import { GRAPH_NODE, VECTOR_DB } from "@/constants/agent";
+import { SystemProviders } from "@/app/modules/providers/interface";
 
 interface Props {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
+  systemProviders: SystemProviders[];
 }
 
-const LLMSection = ({ agent, knowledgeBases }: Props) => {
+const LLMSection = ({ agent, knowledgeBases, systemProviders }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
   const [faqs, setFaqs] = useState<FaqsValues[]>([]);
@@ -122,15 +123,15 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
     setIsOpen(false);
   };
 
-  const selectedProvider = PROVIDERS.find(
+  const selectedProvider = systemProviders.find(
     (provider) =>
-      provider.key === form.watch("provider") && provider.category === "llm"
+      provider.name.toLowerCase() === form.watch("provider") && provider.category.toLowerCase() === "llm"
   );
 
   const onSubmit = async (data: LLMValues) => {
     try {
       const selectedModel = selectedProvider?.models?.find(
-        (model) => model.key === data.model
+        (model) => model.value === data.model
       );
       const updatedAgent: CreateAgentPayload = {
         agent_prompts: {
@@ -250,7 +251,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("model", ""); // Reset model field
+                    form.setValue("model", selectedProvider?.models[0].value || ""); // Reset model field
                   }}
                   value={field.value}
                 >
@@ -258,11 +259,11 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                     <SelectValue placeholder="Select Provider" />
                   </SelectTrigger>
                   <SelectContent>
-                    {PROVIDERS.filter(
-                      (provider) => provider.category === "llm"
+                    {systemProviders.filter(
+                      (provider) => provider.category.toLowerCase() === "llm"
                     ).map((provider) => (
-                      <SelectItem key={provider.key} value={provider.key}>
-                        {provider.label}
+                      <SelectItem key={provider.name.toLowerCase()} value={provider.name.toLowerCase()}>
+                        {provider.name}
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -287,7 +288,7 @@ const LLMSection = ({ agent, knowledgeBases }: Props) => {
                   </SelectTrigger>
                   <SelectContent>
                     {selectedProvider?.models?.map((model) => (
-                      <SelectItem key={model.key} value={model.key}>
+                      <SelectItem key={model.value} value={model.value}>
                         {model.label}
                       </SelectItem>
                     )) || <SelectItem value="">No models available</SelectItem>}

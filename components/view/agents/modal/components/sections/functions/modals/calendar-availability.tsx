@@ -7,7 +7,7 @@ import * as z from "zod";
 import { CalendarSearch } from "lucide-react";
 import {
   APIParams,
-  ToolDescription,
+  ToolFunction,
   ToolModel,
 } from "@/app/modules/agents/interface";
 import { Button } from "@/components/ui/button";
@@ -44,7 +44,7 @@ import { SearchableSelect } from "@/components/ui/searchable-select";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (tool: ToolDescription, toolParams: APIParams) => void;
+  onSave: (tool: ToolFunction, toolParams: APIParams) => void;
   apiToolsConfig: ToolModel;
   editState: {
     isEditing: boolean;
@@ -142,11 +142,14 @@ const CalendarAvailabilityDialog = ({
       ? editState.toolName
       : generateToolName("check_availability_of_slots");
 
-    const newTool: ToolDescription = {
-      name: toolName,
-      description: values.description,
-      parameters: API_TOOLS.CALENDAR_AVAILABILITY.parameters,
-      key: API_TOOLS.CALENDAR_AVAILABILITY.key,
+    const newTool: ToolFunction = {
+      type: "function",
+      function: {
+        name: toolName,
+        description: values.description,
+        parameters: API_TOOLS.CALENDAR_AVAILABILITY.parameters,
+        key: API_TOOLS.CALENDAR_AVAILABILITY.key,
+      },
     };
 
     const offset = timezones.find((tz) => tz.value === values.timezone)?.offset;

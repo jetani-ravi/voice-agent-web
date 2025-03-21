@@ -12,17 +12,17 @@ import {
 } from "@/components/ui/dialog";
 import {
   ToolModel,
-  ToolDescription,
+  ToolFunction,
   APIParams,
 } from "@/app/modules/agents/interface";
-import { JsonEditor } from "json-edit-react";
+import { JsonEditor, githubDarkTheme, defaultTheme } from "json-edit-react";
 import { API_TOOLS, generateToolName } from "@/constants/agent";
 import { useToast } from "@/hooks/use-toast";
-
+import { useTheme } from "next-themes";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (tool: ToolDescription, toolParams: APIParams) => void;
+  onSave: (tool: ToolFunction, toolParams: APIParams) => void;
   apiToolsConfig: ToolModel;
   editState: {
     isEditing: boolean;
@@ -42,25 +42,38 @@ const CustomFunctionDialog = ({
   editState,
 }: Props) => {
   const [jsonData, setJsonData] = useState(API_TOOLS.CUSTOM_FUNCTION);
+  const { theme } = useTheme();
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    if (theme === "dark") {
+      setIsDarkMode(true);
+    } else if (theme === "light") {
+      setIsDarkMode(false);
+    } else {
+      setIsDarkMode(window.matchMedia("(prefers-color-scheme: dark)").matches);
+    }
+  }, [theme]);
+
   const { toast } = useToast();
   useEffect(() => {
     if (isOpen && editState?.isEditing) {
       const existingTool = apiToolsConfig.tools?.find(
-        (t) => t.name === editState.toolName
+        (t) => t.function.name === editState.toolName
       );
       const existingParams = apiToolsConfig.tools_params[editState.toolName];
 
       if (existingTool && existingParams) {
         setJsonData({
-          name: existingTool.name,
-          description: existingTool.description,
-          parameters: existingTool.parameters as any,
-          key: existingTool.key,
+          name: existingTool.function.name,
+          description: existingTool.function.description,
+          parameters: existingTool.function.parameters as any,
+          key: existingTool.function.key,
           value: {
             method: existingParams.method as string,
             param: existingParams.param as string,
             url: existingParams.url as string,
-            api_token: existingParams.api_token as string,
+            api_token: existingParams.api_token as string
           },
         });
       }
@@ -89,11 +102,14 @@ const CustomFunctionDialog = ({
         throw new Error("Method is required in value object");
       }
 
-      const toolDescription: ToolDescription = {
-        name: jsonData.name,
-        description: jsonData.description,
-        parameters: jsonData.parameters || {},
-        key: jsonData.key,
+      const toolDescription: ToolFunction = {
+        type: "function",
+        function: {
+          name: jsonData.name,
+          description: jsonData.description,
+          parameters: jsonData.parameters || {},
+          key: jsonData.key,
+        },
       };
 
       const toolParams: APIParams = {
@@ -141,6 +157,12 @@ const CustomFunctionDialog = ({
             data={jsonData}
             minWidth="100%"
             setData={setJsonData as any}
+            theme={[isDarkMode ? githubDarkTheme : defaultTheme, {
+              input: {
+                backgroundColor: isDarkMode ? "#1e1e1e" : "#fff",
+                color: isDarkMode ? "#fff" : "#000",
+              },
+            }]}
           />
         </div>
         <DialogFooter>

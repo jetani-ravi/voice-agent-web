@@ -112,7 +112,7 @@ export const API_TOOLS = {
       method: "GET",
       param: '{"eventTypeId":"1474110","startTime":"%(startTime)s","endTime":"%(endTime)s","timeZone":"Asia/Kolkata"}',
       url: "",
-      api_token: "",
+      api_token: ""
     },
   },
 };

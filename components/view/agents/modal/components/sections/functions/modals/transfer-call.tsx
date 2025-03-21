@@ -7,7 +7,7 @@ import * as z from "zod";
 import { PhoneForwarded } from "lucide-react";
 import {
   APIParams,
-  ToolDescription,
+  ToolFunction,
   ToolModel,
 } from "@/app/modules/agents/interface";
 import { Button } from "@/components/ui/button";
@@ -34,7 +34,7 @@ import { generateToolName, API_TOOLS } from "@/constants/agent";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (tool: ToolDescription, toolParams: APIParams) => void;
+  onSave: (tool: ToolFunction, toolParams: APIParams) => void;
   apiToolsConfig: ToolModel;
   editState: {
     isEditing: boolean;
@@ -81,11 +81,14 @@ const TransferCallDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
       ? editState.toolName
       : generateToolName("transfer_call");
 
-    const newTool: ToolDescription = {
-      name: toolName,
-      description: values.description,
-      parameters: API_TOOLS.TRANSFER_CALL.parameters,
-      key: API_TOOLS.TRANSFER_CALL.key,
+    const newTool: ToolFunction = {
+      type: "function",
+      function: {
+        name: toolName,
+        description: values.description,
+        parameters: API_TOOLS.TRANSFER_CALL.parameters,
+        key: API_TOOLS.TRANSFER_CALL.key,
+      },
     };
 
     const newToolParams: APIParams = {

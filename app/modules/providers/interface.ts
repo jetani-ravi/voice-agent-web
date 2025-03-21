@@ -7,12 +7,22 @@ export interface CredentialConfig {
   required: boolean;
 }
 
+export interface ModelsConfig {
+  label: string;
+  value: string;
+  family?: string;
+  description?: string;
+  price?: number | Record<string, number>;
+}
+
 export interface SystemProviders {
   _id: string;
   name: string;
   category: string;
   credentials: Record<string, CredentialConfig>;
   is_supported?: boolean;
+  models: ModelsConfig[];
+  show_in_providers: boolean;
   version?: number;
   iconPath?: string;
   created_at: string;
@@ -38,8 +48,13 @@ export interface ProvidersWithConnection {
   connection: ProvidersConnection | null;
 }
 
-export type ListSystemProviders = {
+export type ListSystemProvidersWithConnection = {
   providers: ProvidersWithConnection[];
+  count: number;
+};
+
+export type ListSystemProviders = {
+  providers: SystemProviders[];
   count: number;
 };
 

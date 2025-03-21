@@ -7,7 +7,7 @@ import * as z from "zod";
 import { CalendarCheck } from "lucide-react";
 import {
   APIParams,
-  ToolDescription,
+  ToolFunction,
   ToolModel,
 } from "@/app/modules/agents/interface";
 import { Button } from "@/components/ui/button";
@@ -43,7 +43,7 @@ import { SearchableSelect } from "@/components/ui/searchable-select";
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (tool: ToolDescription, toolParams: APIParams) => void;
+  onSave: (tool: ToolFunction, toolParams: APIParams) => void;
   apiToolsConfig: ToolModel;
   editState: {
     isEditing: boolean;
@@ -136,11 +136,14 @@ const BookCalendarDialog = ({ isOpen, onClose, onSave, editState }: Props) => {
       ? editState.toolName
       : generateToolName("book_appointment");
 
-    const newTool: ToolDescription = {
-      name: toolName,
-      description: values.description,
-      parameters: API_TOOLS.BOOK_APPOINTMENT.parameters,
-      key: API_TOOLS.BOOK_APPOINTMENT.key,
+    const newTool: ToolFunction = {
+      type: "function",
+      function: {
+        name: toolName,
+        description: values.description,
+        parameters: API_TOOLS.BOOK_APPOINTMENT.parameters,
+        key: API_TOOLS.BOOK_APPOINTMENT.key,
+      },
     };
 
     const offset = timezones.find((tz) => tz.value === values.timezone)?.offset;

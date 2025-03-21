@@ -24,17 +24,20 @@ import { Input } from "@/components/ui/input";
 import { createAgent, updateAgent } from "@/app/modules/agents/action";
 import { useToastHandler } from "@/hooks/use-toast-handler";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
+import { SystemProviders } from "@/app/modules/providers/interface";
 
 interface AgentDetailDrawerProps {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
   organization: ActiveOrganizationDetails;
+  systemProviders: SystemProviders[];
 }
 
 export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
   agent,
   knowledgeBases,
-  organization
+  organization,
+  systemProviders
 }) => {
   const [isOpen, setIsOpen] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -121,6 +124,7 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
                 agent={agent}
                 knowledgeBases={knowledgeBases}
                 organization={organization}
+                systemProviders={systemProviders}
               />
 
               {/* Test Section */}
