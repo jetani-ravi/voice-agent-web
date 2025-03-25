@@ -38,9 +38,10 @@ import { RESPONSE_RATES } from "@/constants/agent";
 interface Props {
   agent: Agent;
   organization: ActiveOrganizationDetails;
+  onModelChange?: (provider: string, model: string) => void;
 }
 
-const VoiceSection = ({ agent, organization }: Props) => {
+const VoiceSection = ({ agent, organization, onModelChange }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
   const task = agent.agent_config.tasks.find(
@@ -196,7 +197,22 @@ const VoiceSection = ({ agent, organization }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("model", ""); // Reset model field
+                    // Find models for this provider
+                    const providerModels = organization?.voices?.filter(
+                      (voice) => voice.provider === value
+                    );
+                    
+                    // Get the first model's voice_id and model
+                    const firstModelVoiceId = providerModels?.[0]?.voice_id || "";
+                    const firstModelValue = providerModels?.[0]?.model || "";
+                    
+                    // Set the form value to the voice_id (for the dropdown)
+                    form.setValue("model", firstModelVoiceId);
+                    
+                    // Pass the actual model value to the parent for cost calculation
+                    if (onModelChange) {
+                      onModelChange(value, firstModelValue);
+                    }
                   }}
                   value={field.value}
                 >
@@ -225,7 +241,18 @@ const VoiceSection = ({ agent, organization }: Props) => {
             <FormItem>
               <FormLabel>Model</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select 
+                  onValueChange={(voiceId) => {
+                    field.onChange(voiceId);
+                    // Find the selected voice model
+                    const selectedVoice = models?.find(m => m.voice_id === voiceId);
+                    // Pass the actual model value to the parent for cost calculation
+                    if (onModelChange && selectedVoice) {
+                      onModelChange(selectedVoice.provider, selectedVoice.model);
+                    }
+                  }} 
+                  value={field.value}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Model" />
                   </SelectTrigger>

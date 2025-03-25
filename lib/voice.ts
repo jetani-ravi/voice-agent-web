@@ -109,3 +109,16 @@ export const getSynthProviderConfig = (
       return null;
   }
 };
+
+export const getSynthModelForCostCalculation = (
+  providerConfig: SynthesizerConfig | undefined
+) => {
+  if (!providerConfig) return "";
+  if ("model" in providerConfig) {
+    return providerConfig.model;
+  }
+  if ("engine" in providerConfig) {
+    return providerConfig.engine;
+  }
+  return "";
+};

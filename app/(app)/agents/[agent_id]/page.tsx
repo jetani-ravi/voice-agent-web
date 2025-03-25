@@ -7,7 +7,7 @@ import NotFound from "@/components/not-found";
 import { getActiveOrganization } from "@/app/modules/organizations/action";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
-import { getSystemProviders } from "@/app/modules/providers/action";
+import { getProvidersWithConnection } from "@/app/modules/providers/action";
 import { SystemProviders } from "@/app/modules/providers/interface";
 
 const breadcrumbs = [
@@ -34,7 +34,7 @@ const AgentDetail = async ({
       getAgent(agent_id),
       getKnowledgeBases({}),
       getActiveOrganization(),
-      getSystemProviders(),
+      getProvidersWithConnection({ show_all: "true" }),
     ]);
 
   // Handle agent fetch result
