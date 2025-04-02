@@ -8,7 +8,7 @@ import { getActiveOrganization } from "@/app/modules/organizations/action";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
 import { getProvidersWithConnection } from "@/app/modules/providers/action";
-import { SystemProviders } from "@/app/modules/providers/interface";
+import { ProvidersWithConnection } from "@/app/modules/providers/interface";
 
 const breadcrumbs = [
   {
@@ -86,7 +86,7 @@ const AgentDetail = async ({
   }
 
   // Handle system providers fetch result
-  let systemProviders: SystemProviders[] = [];
+  let systemProviders: ProvidersWithConnection[] = [];
   if (
     systemProvidersResult.status === "fulfilled" &&
     systemProvidersResult.value.success

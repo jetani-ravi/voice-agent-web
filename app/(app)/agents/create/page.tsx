@@ -7,8 +7,8 @@ import { DEFAULT_AGENT } from "@/constants/agent";
 import { getActiveOrganization } from "@/app/modules/organizations/action";
 import { KnowledgeBase } from "@/app/modules/knowledgebase/interface";
 import { ActiveOrganizationDetails } from "@/app/modules/organizations/interface";
-import { getSystemProviders } from "@/app/modules/providers/action";
-import { SystemProviders } from "@/app/modules/providers/interface";
+import { getProvidersWithConnection } from "@/app/modules/providers/action";
+import { ProvidersWithConnection } from "@/app/modules/providers/interface";
 
 const breadcrumbs = [
   {
@@ -23,7 +23,7 @@ const breadcrumbs = [
 
 const CreateAgent = async () => {
   const [knowledgeBaseResult, activeOrganizationResult, systemProvidersResult] =
-    await Promise.allSettled([getKnowledgeBases({}),  getActiveOrganization(), getSystemProviders()]);
+    await Promise.allSettled([getKnowledgeBases({}),  getActiveOrganization(), getProvidersWithConnection()]);
   let knowledge_bases: KnowledgeBase[] = [];
   if (
     knowledgeBaseResult.status === "fulfilled" &&
@@ -56,7 +56,7 @@ const CreateAgent = async () => {
   }
 
   // Handle system providers fetch result
-  let systemProviders: SystemProviders[] = [];
+  let systemProviders: ProvidersWithConnection[] = [];
   if (
     systemProvidersResult.status === "fulfilled" &&
     systemProvidersResult.value.success
