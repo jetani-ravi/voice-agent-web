@@ -9,7 +9,7 @@ const breadcrumbs = [
 ];
 
 export default function Page() {
-  redirect("/agents");
+  redirect("/knowledge-base");
   return (
     <>
       <Header breadcrumbs={breadcrumbs} />

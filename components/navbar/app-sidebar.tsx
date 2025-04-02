@@ -1,16 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  AudioLines,
-  BookOpen,
-  Bot,
-  KeyRound,
-  Package,
-  Phone,
-  Settings2,
-  History,
-} from "lucide-react";
+import { AudioLines, BookOpen, Settings2 } from "lucide-react";
 
 import { NavMain } from "@/components/navbar/nav-main";
 import { NavUser } from "@/components/navbar/nav-user";
@@ -25,43 +16,17 @@ import {
 import { User } from "@/app/modules/user/interface";
 
 // This is sample data.
-const data = {
+export const data = {
   navMain: [
-    {
-      title: "Agents",
-      url: "/agents",
-      icon: Bot,
-    },
-    {
-      title: "Call History",
-      url: "/call-history",
-      icon: History,
-    },
     {
       title: "Knowledge Base",
       url: "/knowledge-base",
       icon: BookOpen,
     },
     {
-      title: "Phone Numbers",
-      url: "/phone-numbers",
-      icon: Phone,
-      isActive: true,
-    },
-    {
       title: "Voice Library",
       url: "/voice-library",
       icon: AudioLines,
-    },
-    {
-      title: "Providers",
-      url: "/providers",
-      icon: Package,
-    },
-    {
-      title: "API Keys",
-      url: "/api-keys",
-      icon: KeyRound,
     },
     {
       title: "Settings",
