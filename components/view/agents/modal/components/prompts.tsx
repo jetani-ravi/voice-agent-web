@@ -24,9 +24,10 @@ import { useRouter } from "next/navigation";
 
 interface Props {
   agent: Agent;
+  className?: string;
 }
 
-const PromptsSection = ({ agent }: Props) => {
+const PromptsSection = ({ agent, className }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
   const form = useForm<PromptsValues>({
@@ -67,7 +68,7 @@ const PromptsSection = ({ agent }: Props) => {
   };
 
   return (
-    <div className="w-2/5 p-6 bg-card rounded-lg overflow-y-auto">
+    <div className={`p-6 bg-card rounded-lg overflow-auto ${className || ''}`}>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <div>

@@ -41,6 +41,8 @@ export interface ProvidersWithConnection {
   category: string;
   credentials: Record<string, CredentialConfig>;
   is_supported?: boolean;
+  models?: ModelsConfig[];
+  show_in_providers?: boolean;
   version?: number;
   icon_path?: string;
   created_at: string;

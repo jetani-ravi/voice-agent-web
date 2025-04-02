@@ -13,6 +13,7 @@ export interface SearchParams extends PaginationParams, SortParams {
   provider?: string;
   language?: string;
   gender?: string;
+  show_all?: "true" | "false";
 }
 
 export function createPaginationParams(params: PaginationParams): {

@@ -37,11 +37,15 @@ import { TranscribersConfig } from "@/app/modules/models-config/interface";
 import { getTranscribers } from "@/app/modules/models-config/action";
 import { LANGUAGES } from "@/constants/providers";
 import { Switch } from "@/components/ui/switch";
+import { SystemProviders } from "@/app/modules/providers/interface";
+
 interface Props {
   agent: Agent;
+  systemProviders: SystemProviders[];
+  onModelChange?: (provider: string, model: string) => void;
 }
 
-const TranscriberSection = ({ agent }: Props) => {
+const TranscriberSection = ({ agent, onModelChange }: Props) => {
   const { handleToast } = useToastHandler();
   const [transcribers, setTranscribers] = useState<TranscribersConfig[]>([]);
   const router = useRouter();
@@ -169,8 +173,11 @@ const TranscriberSection = ({ agent }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
-                    form.setValue("model", ""); // Reset model field
+                    form.setValue("model", models?.[0]?.canonical_name || ""); // Reset model field
                     form.setValue("language", ""); // Reset language field
+                    if (onModelChange) {
+                      onModelChange(value, models?.[0]?.architecture || "");
+                    }
                   }}
                   value={field.value}
                 >
@@ -202,6 +209,9 @@ const TranscriberSection = ({ agent }: Props) => {
                 <Select
                   onValueChange={(value) => {
                     field.onChange(value);
+                    if (onModelChange) {
+                      onModelChange(selectedProvider, value);
+                    }
                     form.setValue("language", ""); // Reset language field when model changes
                   }}
                   value={field.value}

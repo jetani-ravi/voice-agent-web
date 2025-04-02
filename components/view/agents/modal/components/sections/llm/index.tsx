@@ -49,9 +49,10 @@ interface Props {
   agent: Agent;
   knowledgeBases: KnowledgeBase[];
   systemProviders: SystemProviders[];
+  onModelChange?: (provider: string, model: string) => void;
 }
 
-const LLMSection = ({ agent, knowledgeBases, systemProviders }: Props) => {
+const LLMSection = ({ agent, knowledgeBases, systemProviders, onModelChange }: Props) => {
   const { handleToast } = useToastHandler();
   const router = useRouter();
   const [faqs, setFaqs] = useState<FaqsValues[]>([]);
@@ -252,6 +253,9 @@ const LLMSection = ({ agent, knowledgeBases, systemProviders }: Props) => {
                   onValueChange={(value) => {
                     field.onChange(value);
                     form.setValue("model", selectedProvider?.models?.[0]?.value || ""); // Reset model field
+                    if (onModelChange) {
+                      onModelChange(value, selectedProvider?.models?.[0]?.value || "");
+                    }
                   }}
                   value={field.value}
                 >
@@ -282,7 +286,12 @@ const LLMSection = ({ agent, knowledgeBases, systemProviders }: Props) => {
             <FormItem>
               <FormLabel>Model</FormLabel>
               <FormControl>
-                <Select onValueChange={field.onChange} value={field.value}>
+                <Select onValueChange={(value) => {
+                  field.onChange(value);
+                  if (onModelChange) {
+                    onModelChange(selectedProvider?.name.toLowerCase() || "", value);
+                  }
+                }} value={field.value}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select a Model" />
                   </SelectTrigger>

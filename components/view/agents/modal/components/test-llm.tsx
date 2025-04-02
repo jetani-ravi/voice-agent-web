@@ -7,9 +7,10 @@ import LLMChat from "./sections/llm-chat";
 
 interface Props {
   agent?: Agent;
+  className?: string;
 }
 
-const TestLLMSection = ({ agent }: Props) => {
+const TestLLMSection = ({ agent, className }: Props) => {
   const [open, setOpen] = useState(false);
   const [showChat, setShowChat] = useState(false);
 
@@ -19,7 +20,7 @@ const TestLLMSection = ({ agent }: Props) => {
   };
 
   return (
-    <div className="flex-1 px-6 py-4 rounded-lg bg-card">
+    <div className={`px-6 py-4 rounded-lg bg-card overflow-auto ${className || ''}`}>
       <Tabs defaultValue="test" className="h-full">
         <div className="flex-1 flex flex-col items-center justify-center">
           <TabsList className="w-full flex justify-center items-center">

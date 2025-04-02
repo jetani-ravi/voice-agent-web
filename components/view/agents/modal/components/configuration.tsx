@@ -29,16 +29,20 @@ interface Props {
   knowledgeBases: KnowledgeBase[];
   organization: ActiveOrganizationDetails;
   systemProviders: SystemProviders[];
+  onModelChange?: (type: 'llm' | 'transcriber' | 'synthesizer', model: { provider: string, model: string }) => void;
+  className?: string;
 }
 
 const ConfigurationSection = ({
   agent,
   knowledgeBases,
   organization,
-  systemProviders
+  systemProviders,
+  onModelChange,
+  className
 }: Props) => {
   return (
-    <div className="flex-1 px-6 py-4 bg-card overflow-y-auto rounded-lg">
+    <div className={`px-6 py-4 bg-card overflow-auto rounded-lg ${className || ''}`}>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="llm">
           <AccordionTrigger className="text-sm font-medium">
@@ -48,7 +52,12 @@ const ConfigurationSection = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <LLMSection agent={agent} knowledgeBases={knowledgeBases} systemProviders={systemProviders} />
+            <LLMSection 
+              agent={agent} 
+              knowledgeBases={knowledgeBases} 
+              systemProviders={systemProviders} 
+              onModelChange={(provider, model) => onModelChange?.('llm', { provider, model })}
+            />
           </AccordionContent>
         </AccordionItem>
 
@@ -60,7 +69,11 @@ const ConfigurationSection = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <TranscriberSection agent={agent} />
+            <TranscriberSection 
+              agent={agent} 
+              systemProviders={systemProviders}
+              onModelChange={(provider, model) => onModelChange?.('transcriber', { provider, model })}
+            />
           </AccordionContent>
         </AccordionItem>
 
@@ -72,7 +85,11 @@ const ConfigurationSection = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <VoiceSection agent={agent} organization={organization} />
+            <VoiceSection 
+              agent={agent} 
+              organization={organization}
+              onModelChange={(provider, model) => onModelChange?.('synthesizer', { provider, model })}
+            />
           </AccordionContent>
         </AccordionItem>
 
