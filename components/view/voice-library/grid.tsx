@@ -30,7 +30,7 @@ const VoiceCard = ({
           {voice.preview_url && (
             <Button
               variant="outline"
-              // size="icon"
+              className="text-success hover:text-success/80"
               title="Play/Pause Audio"
               onClick={(e) => {
                 e.stopPropagation();
@@ -39,12 +39,12 @@ const VoiceCard = ({
             >
               {playingAudio === voice.voice_id ? (
                 <>
-                  <PauseCircle className="h-6 w-6" />
+                  <PauseCircle className="h-6 w-6 text-success" />
                   Pause
                 </>
               ) : (
                 <>
-                  <PlayCircle className="h-6 w-6" />
+                  <PlayCircle className="h-6 w-6 text-success" />
                   Play
                 </>
               )}
@@ -62,7 +62,7 @@ const VoiceCard = ({
                 }
               }}
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="h-4 w-4 text-destructive" />
             </Button>
           ) : (
             <Button
