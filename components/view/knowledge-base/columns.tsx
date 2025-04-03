@@ -22,11 +22,11 @@ const getStatusBadge = (status: string) => {
     case KNOWLEDGE_BASE_STATUS.PENDING:
       return <Badge variant="warning">Pending</Badge>;
     case KNOWLEDGE_BASE_STATUS.PROCESSING:
-      return <Badge variant="info">Processing</Badge>;
+      return <Badge variant="subtle-info">Processing</Badge>;
     case KNOWLEDGE_BASE_STATUS.COMPLETE:
-      return <Badge variant="success">Complete</Badge>;
+      return <Badge variant="subtle-success">Complete</Badge>;
     case KNOWLEDGE_BASE_STATUS.FAILED:
-      return <Badge variant="destructive">Failed</Badge>;
+      return <Badge variant="subtle-destructive">Failed</Badge>;
   }
 };
 
