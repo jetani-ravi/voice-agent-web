@@ -17,7 +17,7 @@ interface GetColumnsProps {
 
 const getYesNoBadge = (value: boolean) => {
   return (
-    <Badge variant={value ? "success" : "warning"}>
+    <Badge variant={value ? "subtle-success" : "subtle-warning"}>
       {value ? "Yes" : "No"}
     </Badge>
   );

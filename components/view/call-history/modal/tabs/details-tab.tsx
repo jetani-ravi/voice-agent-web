@@ -26,10 +26,10 @@ export function DetailsTab({ execution }: DetailsTabProps) {
             <Badge 
               variant={
                 execution.status?.toLowerCase() === "completed" 
-                  ? "success" 
+                  ? "subtle-success" 
                   : execution.status?.toLowerCase() === "failed" 
-                    ? "destructive" 
-                    : "secondary"
+                    ? "subtle-destructive" 
+                    : "subtle-secondary"
               } 
               className="capitalize"
             >
@@ -48,15 +48,15 @@ export function DetailsTab({ execution }: DetailsTabProps) {
               <Badge
                 variant={
                   execution.telephony_data?.call_type === "outbound"
-                    ? "success"
-                    : "destructive"
+                    ? "subtle-success"
+                    : "subtle-destructive"
                 }
                 className="capitalize"
               >
                 {execution.telephony_data?.call_type}
               </Badge>
             ) : (
-              <Badge variant="info" className="capitalize">
+              <Badge variant="subtle-info" className="capitalize">
                 {"Chat"}
               </Badge>
             )}

@@ -77,7 +77,7 @@ export const getColumns = ({
           {diffDays > 0 ? (
             `${diffDays} day${diffDays === 1 ? "" : "s"}`
           ) : (
-            <Badge variant="destructive">Expired</Badge>
+            <Badge variant="subtle-destructive">Expired</Badge>
           )}
         </div>
       );

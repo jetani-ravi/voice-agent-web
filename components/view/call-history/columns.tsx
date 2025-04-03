@@ -27,7 +27,7 @@ const getStatusBadge = (status: string) => {
   switch (status.toLowerCase()) {
     case ExecutionStatus.PENDING:
       return (
-        <Badge variant="warning" className="capitalize">
+        <Badge variant="subtle-warning" className="capitalize">
           {status}
         </Badge>
       );
@@ -37,20 +37,20 @@ const getStatusBadge = (status: string) => {
     case ExecutionStatus.QUEUED:
     case ExecutionStatus.INITIATED:
       return (
-        <Badge variant="info" className="capitalize ">
+        <Badge variant="subtle-info" className="capitalize">
           {status}
         </Badge>
       );
     case ExecutionStatus.COMPLETED:
       return (
-        <Badge variant="success" className="capitalize">
+        <Badge variant="subtle-success" className="capitalize">
           {status}
         </Badge>
       );
     case ExecutionStatus.CANCELLED:
     case ExecutionStatus.FAILED:
       return (
-        <Badge variant="destructive" className="capitalize">
+        <Badge variant="subtle-destructive" className="capitalize">
           {status}
         </Badge>
       );
@@ -146,15 +146,15 @@ export const getColumns = ({
         <Badge
           variant={
             execution.telephony_data?.call_type === "outbound"
-                ? "success"
-              : "destructive"
+              ? "subtle-success"
+              : "subtle-destructive"
           }
           className="capitalize"
         >
           {execution.telephony_data?.call_type}
         </Badge>
       ) : (
-        <Badge variant="info" className="capitalize">
+        <Badge variant="subtle-info" className="capitalize">
           {"Chat"}
         </Badge>
       );
