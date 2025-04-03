@@ -82,7 +82,7 @@ const ControlledGrid = <TData,>({
     <div className="space-y-4">
       {canSearch && (
         <div
-          className={`flex flex-wrap flex-grow gap-4 ${
+          className={`flex flex-wrap grow gap-4 ${
             alignFiltersToSearch === "end" && "justify-between"
           } items-center`}
         >

@@ -139,7 +139,7 @@ const DataTable = ({ voices, pagination }: DataTableProps) => {
   }, []);
 
   const filterElements = (
-    <div className="flex flex-wrap flex-grow gap-4">
+    <div className="flex flex-wrap grow gap-4">
       <SearchableSelect
         defaultValue={filters.language}
         options={LANGUAGES}

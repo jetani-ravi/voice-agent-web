@@ -11,7 +11,7 @@ export default async function AppLayout({
 
   const user = response.data!;
   return (
-    <main className="flex min-h-screen flex-grow">
+    <main className="flex min-h-screen grow">
       <SidebarProvider>
         <AppSidebar user={user} />
         <SidebarInset>{children}</SidebarInset>
