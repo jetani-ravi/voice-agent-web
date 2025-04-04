@@ -125,7 +125,7 @@ export const getColumns = ({
             className="text-muted-foreground hover:text-primary"
             onClick={handleEdit}
           >
-            <Edit2 className="h-4 w-4" />
+            <Edit2 className="h-4 w-4 text-info" />
             <span className="sr-only">Edit Agent</span>
           </Button>
           {/* Delete Agent */}

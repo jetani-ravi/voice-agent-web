@@ -42,7 +42,7 @@ const ConfigurationSection = ({
   className
 }: Props) => {
   return (
-    <div className={`px-6 py-4 bg-card overflow-auto rounded-lg ${className || ''}`}>
+    <div className={`px-6 py-4 bg-card rounded-lg ${className || ''}`}>
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="llm">
           <AccordionTrigger className="text-sm font-medium">

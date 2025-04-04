@@ -50,7 +50,7 @@ const DeletePopover = ({
           )}
           disabled={disabled}
         >
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 text-destructive" />
           <span className="sr-only">Delete Agent</span>
         </Button>
       </PopoverTrigger>

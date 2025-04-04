@@ -143,7 +143,7 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
 
   return (
     <Drawer open={isOpen} onOpenChange={handleClose}>
-      <DrawerContent className="overflow-hidden">
+      <DrawerContent>
         <div className="h-screen w-full flex flex-col bg-sidebar-accent">
           <DrawerHeader className="flex flex-col flex-wrap gap-4 pb-2">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -188,12 +188,12 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
             </div>
           </DrawerHeader>
 
-          <div className="flex-1 overflow-auto">
-            <div className="flex flex-col lg:flex-row h-auto py-2 px-4 gap-4">
+          <div className="flex-1 overflow-hidden">
+            <div className="flex flex-col lg:flex-row h-full py-2 px-4 gap-4">
               {/* Prompts Section */}
               <PromptsSection 
                 agent={agent} 
-                className="w-full lg:w-2/5 h-[500px] lg:h-auto mb-4 lg:mb-0" 
+                className="w-full lg:w-2/5 h-[80vh] lg:h-auto overflow-auto" 
               />
 
               {/* Configuration Section */}
@@ -203,13 +203,13 @@ export const AgentDetailDrawer: React.FC<AgentDetailDrawerProps> = ({
                 organization={organization}
                 systemProviders={systemProviders}
                 onModelChange={updateSelectedModel}
-                className="w-full lg:flex-1 h-[500px] lg:h-auto mb-4 lg:mb-0"
+                className="w-full lg:flex-1 h-[80vh] lg:h-auto overflow-auto"
               />
 
               {/* Test Section */}
               <TestLLMSection 
                 agent={agent} 
-                className="w-full lg:w-1/4 h-[500px] lg:h-auto" 
+                className="w-full lg:flex-1 h-[80vh] lg:h-auto overflow-auto" 
               />
             </div>
           </div>

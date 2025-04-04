@@ -104,7 +104,7 @@ export function OrganizationSwitcher({ user }: { user: User }) {
                   className="gap-2 p-2"
                 >
                   <div className="flex size-6 items-center justify-center rounded-sm border">
-                    <Briefcase className="h-4 w-4" />
+                    <Briefcase className="h-4 w-4 text-info" />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">
                     <span className="truncate font-semibold">
@@ -131,7 +131,7 @@ export function OrganizationSwitcher({ user }: { user: User }) {
                       }}
                       disabled={session?.user.id !== organization.created_by}
                     >
-                      <Edit2 className="h-3 w-3" />
+                      <Edit2 className="h-3 w-3 text-info" />
                     </Button>
                   </DropdownMenuShortcut>
                 </DropdownMenuItem>

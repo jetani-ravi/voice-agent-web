@@ -192,7 +192,7 @@ export const getColumns = ({
                   size="icon"
                   className="text-muted-foreground hover:text-primary"
                 >
-                  <PieChart className="h-4 w-4" />
+                  <PieChart className="h-4 w-4 text-warning" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="right" className="bg-background text-foreground min-w-[300px]" align="start">
